@@ -75,7 +75,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const sendRejectionButton = document.getElementById('sendRejectionButton');
     const rejectionStatus = document.getElementById('rejectionStatus');
     const doctorProfileStatus = document.getElementById('doctorProfileStatus');
-
     let currentDoctorId = null;
     if (!adminNameSpan || !adminCreationDateSpan || !logoutButton || !showPatientsButton || !showDoctorsButton || !showVerifiedDoctorsButton || !showNewDoctorApplicationsButton || !showNotificationsButton ||
         !patientsSection || !doctorsSection || !verifiedDoctorsSection || !newDoctorApplicationsSection || !notificationsSection ||
@@ -92,12 +91,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
+  // admin-dashboard.js
+
+document.addEventListener('DOMContentLoaded', async () => {
+    // ... всі ваші ініціалізації констант та елементів DOM ...
+
+    // Функція checkAdminStatus повинна бути ВИЗНАЧЕНА тут
     const checkAdminStatus = async () => {
         const { data: { user } } = await supabase.auth.getUser();
 
         if (!user) {
             console.warn('checkAdminStatus: Користувач не аутентифікований, перенаправлення на вхід.');
-            window.location.href = '/index.html';
+            window.location.href = 'index.html'; // Використовуйте відносний шлях, як ми обговорювали
             return;
         }
         console.log('checkAdminStatus: Увійшов user ID:', user.id);
@@ -115,7 +120,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             alert('У вас немає прав доступу до цієї панелі. Перевірте консоль для деталей.');
 
             await supabase.auth.signOut();
-            window.location.href = '/index.html';
+            window.location.href = 'index.html'; // Використовуйте відносний шлях
         } else {
             console.log('checkAdminStatus: Адмін увійшов. Доступ дозволено.');
             adminNameSpan.textContent = adminProfile.full_name || user.email || 'Адміністратор';
@@ -126,11 +131,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                 adminCreationDateSpan.textContent = '';
             }
 
+            // Це ті рядки, які показують "Пацієнтів" за замовчуванням
             showSection('patients');
             fetchPatients();
             fetchNewDoctorApplicationsCount();
         }
-    };
+    }; // Кінець визначення функції checkAdminStatus
+
+    // ... всі інші ваші функції (fetchPatients, fetchDoctors, showDoctorDetails тощо) ...
+
+    // Цей виклик має бути тут, після того, як функція checkAdminStatus була ВИЗНАЧЕНА
+    checkAdminStatus(); // <--- ЦЕЙ ВИКЛИК МАЄ БУТИ ТУТ!
+});
     const showSection = (sectionId) => {
         patientsSection.style.display = 'none';
         doctorsSection.style.display = 'none';
@@ -789,7 +801,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     notificationTarget.dispatchEvent(new Event('change'));
     logoutButton.addEventListener('click', async () => {
         await supabase.auth.signOut();
-        window.location.href = '/index.html';
+        window.location.href = 'index.html';
     });
 
     closeButton.addEventListener('click', () => {
