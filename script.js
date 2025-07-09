@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     loginErrorMessage.textContent = 'Вхід успішний! Перенаправлення...';
                     loginErrorMessage.style.color = '#4CAF50';
                     setTimeout(() => {
-                        window.location.href = '/admin-dashboard.html';
+                        window.location.href = 'admin-dashboard.html';
                     }, 500);
                 }
             } else {
