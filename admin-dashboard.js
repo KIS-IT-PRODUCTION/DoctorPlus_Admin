@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    // --- Ініціалізація Supabase клієнта ---
-    // ЗАМІНІТЬ ЦІ ЗНАЧЕННЯ НА ВАШІ РЕАЛЬНІ SUPABASE URL ТА ANON KEY
+
     const SUPABASE_URL = 'https://yslchkbmupuyxgidnzrb.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzbGNoa2JtdXB1eXhnaWRuenJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc5MDM4MDAsImV4cCI6MjA2MzQ3OTgwMH0.fQnzfcEo3tgm6prq9tdwZyQ_fXGrNvJ_abnjs0woR1Y';
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -10,22 +9,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             detectSessionInUrl: false,
         },
     });
-
-    // --- ДОДАНО: ТИМЧАСОВИЙ АДМІН-КЛЮЧ ДЛЯ АВТЕНТИФІКАЦІЇ В EDGE FUNCTION ---
-    // !!! УВАГА: Зберігання секретного ключа в клієнтському JavaScript є НЕБЕЗПЕЧНИМ !!!
-    // Це рішення є ТИМЧАСОВИМ для налагодження.
-    // У продакшн-середовищі, автентифікація Edge Function повинна відбуватися
-    // через JWT-токен користувача (якщо це автентифікований адмін),
-    // або через бекенд-сервіс, який безпечно зберігає та використовує API-ключі.
-    // --- КІНЕЦЬ ДОДАНОГО БЛОКУ ---
-
-    // --- КОНФІГУРАЦІЯ ДЛЯ EDGE FUNCTION ---
-    // Це URL вашої Edge Function для відправки сповіщень
     const EDGE_FUNCTION_URL = 'https://yslchkbmupuyxgidnzrb.supabase.co/functions/v1/send-admin-notification';
 
-    const DELETE_AUTH_USER_FUNCTION_URL = 'https://yslchkbmupuyxgidnzrb.supabase.co/functions/v1/delete-auth-user'; // ЗАМІНІТЬ НА РЕАЛЬНИЙ URL ВАШОЇ EDGE FUNCTION
-
-    // --- DOM елементи (перевірені наявність у кінці файлу) ---
+    const DELETE_AUTH_USER_FUNCTION_URL = 'https://yslchkbmupuyxgidnzrb.supabase.co/functions/v1/delete-auth-user'; 
     const adminNameSpan = document.getElementById('adminName');
     const adminCreationDateSpan = document.getElementById('adminCreationDate');
     const logoutButton = document.getElementById('logoutButton');
@@ -91,8 +77,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const doctorProfileStatus = document.getElementById('doctorProfileStatus');
 
     let currentDoctorId = null;
-
-    // --- Важлива перевірка наявності всіх елементів DOM ---
     if (!adminNameSpan || !adminCreationDateSpan || !logoutButton || !showPatientsButton || !showDoctorsButton || !showVerifiedDoctorsButton || !showNewDoctorApplicationsButton || !showNotificationsButton ||
         !patientsSection || !doctorsSection || !verifiedDoctorsSection || !newDoctorApplicationsSection || !notificationsSection ||
         !patientsList || !doctorsList || !verifiedDoctorsList || !newDoctorApplicationsList || !newApplicationsCountSpan ||
@@ -108,7 +92,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // --- Функція для перевірки аутентифікації та прав адміністратора ---
     const checkAdminStatus = async () => {
         const { data: { user } } = await supabase.auth.getUser();
 
@@ -148,8 +131,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             fetchNewDoctorApplicationsCount();
         }
     };
-
-    // --- Функція для перемикання видимості секцій ---
     const showSection = (sectionId) => {
         patientsSection.style.display = 'none';
         doctorsSection.style.display = 'none';
@@ -171,9 +152,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         else if (sectionId === 'newDoctorApplications') showNewDoctorApplicationsButton.classList.add('active');
         else if (sectionId === 'notifications') showNotificationsButton.classList.add('active');
     };
-
-    // --- Функції для завантаження та відображення даних ---
-
     const fetchPatients = async () => {
         patientsList.innerHTML = '<li>Завантаження пацієнтів...</li>';
         const { data, error } = await supabase.from('profiles').select('*');
@@ -323,8 +301,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             newApplicationsCountSpan.style.display = 'inline-block';
         }
     };
-
-    // --- Функція для показу деталей лікаря у модальному вікні (з можливістю редагування) ---
     const showDoctorDetails = async (userId) => {
         currentDoctorId = userId;
         rejectionReasonGroup.style.display = 'none';
@@ -387,21 +363,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         doctorDetailsModal.style.display = 'block';
     };
-
-    // --- Функція для відправки сповіщення через Edge Function ---
-    // **ВАЖЛИВО:** Ця функція використовує `ADMIN_SECRET_KEY` у заголовку.
-    // Якщо ваша Edge Function очікує JWT (що є краще), то замість 'X-Admin-Secret'
-    // потрібно передавати `Authorization: Bearer <JWT_токен_адміна>`
    const sendNotification = async (payload) => {
     notificationStatus.textContent = 'Відправлення сповіщення...';
     notificationStatus.style.color = '#FFA500';
 
     try {
-        // Отримуємо поточну сесію користувача
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
         if (sessionError || !session || !session.access_token) {
-            // Якщо адмін не авторизований або немає токена
             notificationStatus.textContent = 'Помилка: Користувач не аутентифікований для відправки сповіщень.';
             notificationStatus.style.color = '#d32f2f';
             console.error('Помилка отримання сесії:', sessionError || 'Сесія відсутня');
@@ -412,7 +381,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                // ПЕРЕДАЄМО JWT Access Token АДМІНА У ЗАГОЛОВКУ AUTHORIZATION
                 'Authorization': `Bearer ${session.access_token}`
             },
             body: JSON.stringify(payload)
@@ -443,10 +411,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         return { success: false, message: error.message }; // Повертаємо об'єкт результату
     }
 };
-
-
-    // --- Обробники подій для кнопок дій лікаря у модальному вікні ---
-
     approveDoctorButton.addEventListener('click', async () => {
         if (!currentDoctorId) return;
 
@@ -462,7 +426,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const { error: updateError } = await supabase
             .from('anketa_doctor')
-            .update({ doctor_check: true, rejection_reason: null }) // Оновлено: очищаємо причину відхилення при схваленні
+            .update({ doctor_check: true, rejection_reason: null }) 
             .eq('user_id', currentDoctorId);
 
         if (updateError) {
@@ -472,8 +436,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else {
             doctorProfileStatus.textContent = 'Лікаря успішно схвалено!';
             doctorProfileStatus.style.color = '#4CAF50';
-
-            // Відправка сповіщення про схвалення
             const notificationPayload = {
                 title: 'Ваш профіль лікаря схвалено!',
                 body: 'Вітаємо! Ваш профіль лікаря успішно пройшов перевірку та був схвалений адміністратором. Тепер ви доступні для консультацій.',
@@ -768,9 +730,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    // --- Обробник подій для форми сповіщень ---
     notificationForm.addEventListener('submit', async (e) => {
-        e.preventDefault(); // Запобігти стандартній відправці форми
+        e.preventDefault();
 
         const target = notificationTarget.value;
         const title = notificationTitle.value.trim();
@@ -778,7 +739,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         let specificId = specificIdInput.value.trim();
         let extraData = {};
 
-        // Валідація
         if (!title || !message) {
             notificationStatus.textContent = 'Будь ласка, заповніть заголовок та повідомлення.';
             notificationStatus.style.color = '#d32f2f';
@@ -804,7 +764,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
-        // Побудова payload для Edge Function
         const payload = {
             title: title,
             body: message,
@@ -818,22 +777,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         await sendNotification(payload);
     });
-
-    // --- Обробник зміни типу отримувача для відображення/приховання поля specificId ---
     notificationTarget.addEventListener('change', () => {
         if (notificationTarget.value === 'specific_doctor' || notificationTarget.value === 'specific_patient') {
             specificIdInput.style.display = 'block';
             specificIdInput.setAttribute('placeholder', `Введіть User ID для ${notificationTarget.value === 'specific_doctor' ? 'лікаря' : 'пацієнта'}`);
         } else {
             specificIdInput.style.display = 'none';
-            specificIdInput.value = ''; // Очищаємо, якщо поле приховано
+            specificIdInput.value = ''; 
         }
     });
-
-    // Ініціалізувати стан поля specificId при завантаженні сторінки
     notificationTarget.dispatchEvent(new Event('change'));
-
-    // --- Інші обробники подій ---
     logoutButton.addEventListener('click', async () => {
         await supabase.auth.signOut();
         window.location.href = '/index.html';
@@ -842,8 +795,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     closeButton.addEventListener('click', () => {
         doctorDetailsModal.style.display = 'none';
     });
-
-    // Закрити модальне вікно при кліку поза ним
     window.addEventListener('click', (event) => {
         if (event.target === doctorDetailsModal) {
             doctorDetailsModal.style.display = 'none';
@@ -869,7 +820,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     showNotificationsButton.addEventListener('click', () => {
         showSection('notifications');
     });
-
-    // --- Запуск перевірки статусу адміна при завантаженні сторінки ---
     checkAdminStatus();
 });
