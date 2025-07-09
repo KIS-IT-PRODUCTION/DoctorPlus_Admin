@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вхід / Реєстрація</title>
+    <link rel="stylesheet" href="style.css">
+        <link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
+
+</head>
+<body>
+    <div>        <img style="align-items: center; flex-direction: row;justify-content: center;" src="/assets/icon.svg">
+</div>
+    <div class="auth-container">
+        <h1>Адміністратор додатку Doctor Plus</h1>
+        <div class="auth-toggle">
+            <button id="showLogin" class="active">Вхід</button>
+            <button id="showRegister">Реєстрація</button>
+        </div>
+
+        <div id="loginSection" class="auth-section">
+            <h2>Вхід</h2>
+            <form id="loginForm">
+                <div class="input-group">
+                    <label for="loginEmail">Email:</label>
+                    <input type="email" id="loginEmail" required autocomplete="username">
+                </div>
+                <div class="input-group">
+                    <label for="loginPassword">Пароль:</label>
+                    <input type="password" id="loginPassword" required autocomplete="current-password">
+                </div>
+                <button type="submit" id="loginButton">Увійти</button>
+                <p id="loginErrorMessage" class="message error"></p>
+            </form>
+        </div>
+
+        <div id="registerSection" class="auth-section" style="display: none;">
+            <h2>Реєстрація</h2>
+            <form id="registerForm">
+                <div class="input-group">
+                    <label for="registerFullName">Повне ім'я:</label>
+                    <input type="text" id="registerFullName" required autocomplete="name">
+                </div>
+                <div class="input-group">
+                    <label for="registerEmail">Email:</label>
+                    <input type="email" id="registerEmail" required autocomplete="email">
+                </div>
+                <div class="input-group">
+                    <label for="registerPassword">Пароль:</label>
+                    <input type="password" id="registerPassword" required autocomplete="new-password">
+                </div>
+                <div class="input-group">
+                    <label for="registerConfirmPassword">Підтвердіть пароль:</label>
+                    <input type="password" id="registerConfirmPassword" required autocomplete="new-password">
+                </div>
+                <button type="submit" id="registerButton">Зареєструватися</button>
+                <p id="registerErrorMessage" class="message error"></p>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="script.js"></script>
+</body>
+</html>

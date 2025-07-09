@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Адмін-Панель</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="admin-dashboard.css">
+    <link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header class="top-bar">
+        <div class="top-bar__left">
+            <img class="admin-logo" src="/assets/icon.svg" alt="Admin Logo">
+            <span class="welcome-message">Адміністратор <strong id="adminName"></strong></span>
+        </div>
+        <div class="top-bar__right">
+            <span id="adminCreationDate" class="admin-creation-date"></span>
+            <button id="logoutButton" class="logout-button">Вийти</button>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <h1>Адмін-Панель</h1>
+
+        <nav class="dashboard-nav">
+            <button id="showPatients"><i class="fas fa-users"></i> Пацієнти</button>
+            <button id="showDoctors"><i class="fas fa-user-md"></i> Лікарі (всі)</button>
+            <button id="showVerifiedDoctors"><i class="fas fa-user-check"></i> Перевірені Лікарі</button>
+            <button id="showNewDoctorApplications"><i class="fas fa-bell"></i> Нові Заявки Лікарів <span id="newApplicationsCount" class="notification-count">0</span></button>
+            <button id="showNotifications"><i class="fas fa-paper-plane"></i> Відправити Сповіщення</button>
+        </nav>
+
+        <div id="patientsSection" class="dashboard-section">
+            <h2>Список Пацієнтів</h2>
+            <p>Тут буде відображатися список пацієнтів.</p>
+            <ul id="patientsList"></ul>
+        </div>
+
+        <div id="doctorsSection" class="dashboard-section" style="display: none;">
+            <h2>Список Усіх Лікарів</h2>
+            <p>Натисніть на лікаря, щоб переглянути деталі.</p>
+            <ul id="doctorsList"></ul>
+        </div>
+
+        <div id="verifiedDoctorsSection" class="dashboard-section" style="display: none;">
+            <h2>Список Перевірених Лікарів</h2>
+            <p>Тут буде відображатися список лише перевірених лікарів.</p>
+            <ul id="verifiedDoctorsList"></ul>
+        </div>
+
+        <div id="newDoctorApplicationsSection" class="dashboard-section" style="display: none;">
+            <h2>Нові Заявки Лікарів</h2>
+            <p>Тут будуть відображатися лікарі, які очікують підтвердження.</p>
+            <ul id="newDoctorApplicationsList"></ul>
+        </div>
+
+        <div id="notificationsSection" class="dashboard-section" style="display: none;">
+            <h2>Відправити Сповіщення</h2>
+            <form id="notificationForm">
+                <div class="input-group">
+                    <label for="notificationTarget">Отримувачі:</label>
+                    <select id="notificationTarget" required>
+                        <option value="all_users">Усім користувачам (лікарям та пацієнтам)</option>
+                        <option value="all_patients">Лише Пацієнтам</option>
+                        <option value="all_doctors">Лише Лікарям</option>
+                        <option value="specific_doctor">Конкретному Лікарю (за ID)</option>
+                        <option value="specific_patient">Конкретному Пацієнту (за ID)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="specificId" style="display: none;">ID конкретного користувача:</label>
+                    <input type="text" id="specificId" placeholder="Введіть User ID (UUID)" style="display: none;">
+                </div>
+                <div class="input-group">
+                    <label for="notificationTitle">Заголовок:</label>
+                    <input type="text" id="notificationTitle" required>
+                </div>
+                <div class="input-group">
+                    <label for="notificationMessage">Повідомлення:</label>
+                    <textarea id="notificationMessage" rows="5" required></textarea>
+                </div>
+                <div class="input-group">
+                    <label for="extraData">Додаткові дані (JSON, необов'язково):</label>
+                    <textarea id="extraData" rows="3" placeholder='{"key": "value"}'></textarea>
+                </div>
+                <button type="submit">Відправити</button>
+                <p id="notificationStatus" class="message"></p>
+            </form>
+        </div>
+    </div>
+
+    <div id="doctorDetailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Деталі Лікаря</h2>
+            <div id="doctorDetailsContent">
+                <img id="doctorAvatar" src="" alt="Аватар лікаря" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 10px;">
+                <p><strong>Повне ім'я:</strong> <input type="text" id="inputFullName"></p>
+                <p><strong>Email:</strong> <input type="email" id="inputEmail"></p>
+                <p><strong>Телефон:</strong> <input type="tel" id="inputPhone"></p>
+                <p><strong>Країна:</strong> <input type="text" id="inputCountry"></p>
+                <p><strong>Мови спілкування:</strong> <textarea id="inputLanguages"></textarea> (JSON-масив: ["Укр", "Англ"])</p>
+                <p><strong>Спеціалізація:</strong> <textarea id="inputSpecialization"></textarea> (JSON-масив: ["Хірург", "Терапевт"])</p>
+                <p><strong>Досвід (роки):</strong> <input type="number" id="inputExperience"></p>
+                <p><strong>Освіта:</strong> <textarea id="inputEducation"></textarea></p>
+                <p><strong>Досягнення:</strong> <textarea id="inputAchievements"></textarea></p>
+                <p><strong>Про мене:</strong> <textarea id="inputAboutMe"></textarea></p>
+                <p><strong>Вартість консультації:</strong> <input type="number" id="inputConsultationCost"></p>
+                <p><strong>Діапазон вартості:</strong> <input type="text" id="inputConsultationCostRange"></p>
+                <p><strong>Теги пошуку:</strong> <textarea id="inputSearchTags"></textarea> (JSON-масив: ["головний біль", "грип"])</p>
+                <p><strong>Банківські реквізити:</strong> <textarea id="inputBankDetails"></textarea></p>
+                <p><strong>Посилання на сертифікат:</strong> <a id="detailCertificate" href="#" target="_blank">Переглянути</a></p>
+                <p><strong>Посилання на диплом:</strong> <a id="detailDiploma" href="#" target="_blank">Переглянути</a></p>
+                <p><strong>Перевірений:</strong> <span id="displayDoctorCheck"></span></p>
+                <p id="doctorProfileStatus"></p>
+            </div>
+            <div class="modal-actions">
+                <button id="approveDoctorButton" style="display:none;">Схвалити Лікаря</button>
+                <button id="rejectDoctorButton" style="display:none;">Відхилити Лікаря</button>
+                <button id="saveDoctorProfileButton">Зберегти Зміни</button>
+                <button id="revokeDoctorAccessButton">Зняти Доступ</button>
+                <button id="deleteDoctorProfileButton">Видалити Профіль</button>
+            </div>
+            <div id="rejectionReasonGroup" style="display:none;">
+                <label for="rejectionReason">Причина відхилення:</label>
+                <textarea id="rejectionReason" rows="3" placeholder="Введіть причину відхилення..."></textarea>
+                <button id="sendRejectionButton">Надіслати Відмову</button>
+               <p id="rejectionStatus" class="message"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="admin-dashboard.js"></script>
+</body>
+</html>
