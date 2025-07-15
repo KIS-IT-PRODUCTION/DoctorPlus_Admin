@@ -8,6 +8,62 @@
     <link rel="stylesheet" href="admin-dashboard.css">
     <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        /* Стилі для нових розділів */
+        .faq-management, .reviews-management {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        #faqForm, #reviewForm {
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        #faqForm h3, #reviewForm h3 {
+            margin-top: 0;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+        #faqTable, #reviewsTable {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        #faqTable th, #faqTable td, #reviewsTable th, #reviewsTable td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        #faqTable th, #reviewsTable th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        #faqTable tr:nth-child(even), #reviewsTable tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        #faqTable .actions button, #reviewsTable .actions button {
+            margin-right: 5px;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+        }
+        .edit-btn, .edit-faq-btn {
+            background-color: #ffc107; /* Жовтий */
+        }
+        .delete-btn, .delete-faq-btn {
+            background-color: #dc3545; /* Червоний */
+        }
+        .secondary-button {
+             background-color: #6c757d;
+        }
+    </style>
 </head>
 <body>
     <header class="top-bar">
@@ -26,33 +82,25 @@
 
         <nav class="dashboard-nav">
             <button id="showPatients"><i class="fas fa-users"></i> Пацієнти</button>
-            <button id="showDoctors"><i class="fas fa-user-md"></i> Лікарі (всі)</button>
-            <button id="showVerifiedDoctors"><i class="fas fa-user-check"></i> Перевірені Лікарі</button>
-            <button id="showNewDoctorApplications"><i class="fas fa-bell"></i> Нові Заявки Лікарів <span id="newApplicationsCount" class="notification-count">0</span></button>
-            <button id="showNotifications"><i class="fas fa-paper-plane"></i> Відправити Сповіщення</button>
+            <button id="showDoctors"><i class="fas fa-user-md"></i> Лікарі</button>
+            <button id="showNewDoctorApplications"><i class="fas fa-bell"></i> Нові Заявки <span id="newApplicationsCount" class="notification-count">0</span></button>
+            <button id="showNotifications"><i class="fas fa-paper-plane"></i> Сповіщення</button>
+            <button id="showFaq"><i class="fas fa-question-circle"></i> Керування FAQ</button>
+            <button id="showReviews"><i class="fas fa-star"></i> Керування Відгуками</button>
         </nav>
 
         <div id="patientsSection" class="dashboard-section">
             <h2>Список Пацієнтів</h2>
-            <p>Тут буде відображатися список пацієнтів.</p>
             <ul id="patientsList"></ul>
         </div>
 
         <div id="doctorsSection" class="dashboard-section" style="display: none;">
             <h2>Список Усіх Лікарів</h2>
-            <p>Натисніть на лікаря, щоб переглянути деталі.</p>
             <ul id="doctorsList"></ul>
-        </div>
-
-        <div id="verifiedDoctorsSection" class="dashboard-section" style="display: none;">
-            <h2>Список Перевірених Лікарів</h2>
-            <p>Тут буде відображатися список лише перевірених лікарів.</p>
-            <ul id="verifiedDoctorsList"></ul>
         </div>
 
         <div id="newDoctorApplicationsSection" class="dashboard-section" style="display: none;">
             <h2>Нові Заявки Лікарів</h2>
-            <p>Тут будуть відображатися лікарі, які очікують підтвердження.</p>
             <ul id="newDoctorApplicationsList"></ul>
         </div>
 
@@ -62,9 +110,8 @@
                 <div class="input-group">
                     <label for="notificationTarget">Отримувачі:</label>
                     <select id="notificationTarget" required>
-                        <option value="all_users">Усім користувачам (лікарям та пацієнтам)</option>
-                        <option value="all_patients">Лише Пацієнтам</option>
                         <option value="all_doctors">Лише Лікарям</option>
+                        <option value="all_patients">Лише Пацієнтам</option>
                         <option value="specific_doctor">Конкретному Лікарю (за ID)</option>
                         <option value="specific_patient">Конкретному Пацієнту (за ID)</option>
                     </select>
@@ -89,6 +136,89 @@
                 <p id="notificationStatus" class="message"></p>
             </form>
         </div>
+
+        <div id="faqSection" class="dashboard-section" style="display: none;">
+            <h2>Керування FAQ</h2>
+            <div class="faq-management">
+                <form id="faqForm">
+                    <input type="hidden" id="faqId">
+                    <h3>Додати / Редагувати Запис</h3>
+                    <div class="input-group">
+                        <label for="faqQuestionUk">Питання (UK):</label>
+                        <input type="text" id="faqQuestionUk" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="faqAnswerUk">Відповідь (UK):</label>
+                        <textarea id="faqAnswerUk" rows="4" required></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label for="faqQuestionEn">Питання (EN):</label>
+                        <input type="text" id="faqQuestionEn" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="faqAnswerEn">Відповідь (EN):</label>
+                        <textarea id="faqAnswerEn" rows="4" required></textarea>
+                    </div>
+                    <button type="submit">Зберегти FAQ</button>
+                    <button type="button" id="clearFaqForm" class="secondary-button">Очистити форму</button>
+                </form>
+                <div id="faqStatus" class="message"></div>
+                <h3>Існуючі FAQ</h3>
+                <div class="table-container">
+                    <table id="faqTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Питання (UK)</th>
+                                <th>Дії</th>
+                            </tr>
+                        </thead>
+                        <tbody id="faqList"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="reviewsSection" class="dashboard-section" style="display: none;">
+            <h2>Керування Відгуками</h2>
+            <div class="reviews-management">
+                <form id="reviewForm">
+                    <input type="hidden" id="reviewId">
+                    <h3>Додати / Редагувати Відгук</h3>
+                    <div class="input-group">
+                        <label for="reviewUserName">Ім'я користувача:</label>
+                        <input type="text" id="reviewUserName" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="reviewRating">Рейтинг (1-5):</label>
+                        <input type="number" id="reviewRating" min="1" max="5" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="reviewDescription">Текст відгуку:</label>
+                        <textarea id="reviewDescription" rows="4" required></textarea>
+                    </div>
+                    <button type="submit">Зберегти Відгук</button>
+                    <button type="button" id="clearReviewForm" class="secondary-button">Очистити форму</button>
+                </form>
+                <div id="reviewStatus" class="message"></div>
+                <h3>Існуючі Відгуки</h3>
+                <div class="table-container">
+                    <table id="reviewsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Автор</th>
+                                <th>Рейтинг</th>
+                                <th>Текст</th>
+                                <th>Дії</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reviewsListAdmin"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <div id="doctorDetailsModal" class="modal">
@@ -101,31 +231,31 @@
                 <p><strong>Email:</strong> <input type="email" id="inputEmail"></p>
                 <p><strong>Телефон:</strong> <input type="tel" id="inputPhone"></p>
                 <p><strong>Країна:</strong> <input type="text" id="inputCountry"></p>
-                <p><strong>Мови спілкування:</strong> <textarea id="inputLanguages"></textarea> (JSON-масив: ["Укр", "Англ"])</p>
-                <p><strong>Спеціалізація:</strong> <textarea id="inputSpecialization"></textarea> (JSON-масив: ["Хірург", "Терапевт"])</p>
+                <p><strong>Мови спілкування:</strong> <textarea id="inputLanguages"></textarea></p>
+                <p><strong>Спеціалізація:</strong> <textarea id="inputSpecialization"></textarea></p>
                 <p><strong>Досвід (роки):</strong> <input type="number" id="inputExperience"></p>
                 <p><strong>Освіта:</strong> <textarea id="inputEducation"></textarea></p>
                 <p><strong>Досягнення:</strong> <textarea id="inputAchievements"></textarea></p>
                 <p><strong>Про мене:</strong> <textarea id="inputAboutMe"></textarea></p>
                 <p><strong>Вартість консультації:</strong> <input type="number" id="inputConsultationCost"></p>
                 <p><strong>Діапазон вартості:</strong> <input type="text" id="inputConsultationCostRange"></p>
-                <p><strong>Теги пошуку:</strong> <textarea id="inputSearchTags"></textarea> (JSON-масив: ["головний біль", "грип"])</p>
+                <p><strong>Теги пошуку:</strong> <textarea id="inputSearchTags"></textarea></p>
                 <p><strong>Банківські реквізити:</strong> <textarea id="inputBankDetails"></textarea></p>
-                <p><strong>Посилання на сертифікат:</strong> <a id="detailCertificate" href="#" target="_blank">Переглянути</a></p>
-                <p><strong>Посилання на диплом:</strong> <a id="detailDiploma" href="#" target="_blank">Переглянути</a></p>
+                <p><strong>Сертифікат:</strong> <a id="detailCertificate" href="#" target="_blank">Переглянути</a></p>
+                <p><strong>Диплом:</strong> <a id="detailDiploma" href="#" target="_blank">Переглянути</a></p>
                 <p><strong>Перевірений:</strong> <span id="displayDoctorCheck"></span></p>
-                <p id="doctorProfileStatus"></p>
+                <p id="doctorProfileStatus" class="message"></p>
             </div>
             <div class="modal-actions">
-                <button id="approveDoctorButton" style="display:none;">Схвалити Лікаря</button>
-                <button id="rejectDoctorButton" style="display:none;">Відхилити Лікаря</button>
-                <button id="saveDoctorProfileButton">Зберегти Зміни</button>
+                <button id="approveDoctorButton" style="display:none;">Схвалити</button>
+                <button id="rejectDoctorButton" style="display:none;">Відхилити</button>
+                <button id="saveDoctorProfileButton">Зберегти</button>
                 <button id="revokeDoctorAccessButton">Зняти Доступ</button>
-                <button id="deleteDoctorProfileButton">Видалити Профіль</button>
+                <button id="deleteDoctorProfileButton">Видалити</button>
             </div>
             <div id="rejectionReasonGroup" style="display:none;">
                 <label for="rejectionReason">Причина відхилення:</label>
-                <textarea id="rejectionReason" rows="3" placeholder="Введіть причину відхилення..."></textarea>
+                <textarea id="rejectionReason" rows="3"></textarea>
                 <button id="sendRejectionButton">Надіслати Відмову</button>
                <p id="rejectionStatus" class="message"></p>
             </div>
