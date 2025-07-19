@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
     // URL до функцій
     const SEND_NOTIFICATION_URL = 'https://yslchkbmupuyxgidnzrb.supabase.co/functions/v1/send-admin-notification';
-    // const SEND_REPLY_URL = 'https://yslchkbmupuyxgidnzrb.supabase.co/functions/v1/send-reply-email'; // Більше не потрібен, функція відповіді видалена
     const DELETE_AUTH_USER_FUNCTION_URL = 'https://yslchkbmupuyxgidnzrb.supabase.co/functions/v1/delete-auth-user';
 
     const SUPABASE_STORAGE_BUCKET = 'public-images'; // Наприклад, 'public_images' або 'main_assets'
@@ -90,6 +89,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     const newMainScreenImageInput = document.getElementById('newMainScreenImage');
     const mainScreenImageStatus = document.getElementById('mainScreenImageStatus');
 
+    // ДОДАНО: ЕЛЕМЕНТИ ДЛЯ INTRO MOTTO TEXT
+    const introMottoTextForm = document.getElementById('introMottoTextForm');
+    const currentIntroMottoTextUk = document.getElementById('currentIntroMottoTextUk');
+    const currentIntroMottoTextEn = document.getElementById('currentIntroMottoTextEn');
+    const introMottoTextStatus = document.getElementById('introMottoTextStatus');
+
+
     // Елементи для нового розділу експорту
     const exportDataTypeSelect = document.getElementById('exportDataType');
     const exportSelectedCsvButton = document.getElementById('exportSelectedCsv');
@@ -98,7 +104,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- ЕЛЕМЕНТИ МОДАЛЬНИХ ВІКОН ---
     const doctorDetailsModal = document.getElementById('doctorDetailsModal');
-    const replyModal = document.getElementById('replyModal'); // Модальне вікно тепер для деталей звернення
+    const replyModal = document.getElementById('replyModal'); 
     
     // Елементи оновленого модального вікна звернень
     const replyUserEmailDisplay = document.getElementById('replyUserEmailDisplay');
@@ -139,9 +145,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const rejectionStatus = document.getElementById('rejectionStatus');
     const doctorProfileStatus = document.getElementById('doctorProfileStatus');
     let currentDoctorId = null;
-    let currentHelpRequestId = null; // Для відстеження ID поточного звернення
+    let currentHelpRequestId = null;
 
-    // --- МАПІНГИ ПОЛІВ ДЛЯ ЕКСПОРТУ (ДЛЯ КРАЩОЇ ЧИТАБЕЛЬНОСТІ) ---
+    // --- МАПІНГИ ПОЛІВ ДЛЯ ЕКСПОРТУ ---
     const commonExportFieldMap = {
         user_id: 'ID Користувача',
         email: 'Email',
@@ -187,7 +193,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const allUsersExportFieldMap = {
         ...patientExportFieldMap,
         ...doctorExportFieldMap,
-        user_role: 'Роль Користувача', // Додаємо це поле для розрізнення пацієнтів/лікарів
+        user_role: 'Роль Користувача', 
     };
 
     const allUsersExportOrder = [
@@ -235,30 +241,82 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ФУНКЦІЯ ДЛЯ ЗАВАНТАЖЕННЯ НАЛАШТУВАНЬ ГОЛОВНОГО ЕКРАНУ
     const fetchMainScreenSettings = async () => {
         mainScreenImageStatus.textContent = 'Завантаження налаштувань...';
-        const { data, error } = await supabase
+        mainScreenImageStatus.style.color = '#FFA500'; // Помаранчевий статус
+        introMottoTextStatus.textContent = 'Завантаження налаштувань...';
+        introMottoTextStatus.style.color = '#FFA500';
+
+        let hasError = false;
+
+        // Завантаження URL зображення
+        const { data: imageUrlData, error: imageUrlError } = await supabase
             .from('app_settings')
             .select('setting_value')
             .eq('setting_name', 'main_screen_image_url')
             .single();
 
-        if (error && error.code !== 'PGRST116') { // PGRST116 = Row not found
-            mainScreenImageStatus.textContent = `Помилка завантаження: ${error.message}`;
+        if (imageUrlError && imageUrlError.code !== 'PGRST116') {
+            mainScreenImageStatus.textContent = `Помилка завантаження зображення: ${imageUrlError.message}`;
             mainScreenImageStatus.style.color = 'red';
             currentMainScreenImageUrlInput.value = '';
             viewCurrentImageLink.style.display = 'none';
-            return;
+            hasError = true;
+        } else {
+            const imageUrl = imageUrlData ? imageUrlData.setting_value : '';
+            currentMainScreenImageUrlInput.value = imageUrl;
+            if (imageUrl) {
+                viewCurrentImageLink.href = imageUrl;
+                viewCurrentImageLink.style.display = 'inline-block';
+            } else {
+                viewCurrentImageLink.style.display = 'none';
+            }
+            mainScreenImageStatus.textContent = 'Зображення завантажено.';
+            mainScreenImageStatus.style.color = 'green';
         }
 
-        const imageUrl = data ? data.setting_value : '';
-        currentMainScreenImageUrlInput.value = imageUrl;
-        if (imageUrl) {
-            viewCurrentImageLink.href = imageUrl;
-            viewCurrentImageLink.style.display = 'inline-block';
+        // Завантаження тексту-мото (UK)
+        const { data: mottoUkData, error: mottoUkError } = await supabase
+            .from('app_settings')
+            .select('setting_value')
+            .eq('setting_name', 'intro_motto_text_uk')
+            .single();
+        
+        if (mottoUkError && mottoUkError.code !== 'PGRST116') {
+            introMottoTextStatus.textContent = `Помилка завантаження тексту (UK): ${mottoUkError.message}`;
+            introMottoTextStatus.style.color = 'red';
+            currentIntroMottoTextUk.value = '';
+            hasError = true;
         } else {
-            viewCurrentImageLink.style.display = 'none';
+            currentIntroMottoTextUk.value = mottoUkData ? mottoUkData.setting_value : '';
         }
-        mainScreenImageStatus.textContent = '';
+
+        // Завантаження тексту-мото (EN)
+        const { data: mottoEnData, error: mottoEnError } = await supabase
+            .from('app_settings')
+            .select('setting_value')
+            .eq('setting_name', 'intro_motto_text_en')
+            .single();
+
+        if (mottoEnError && mottoEnError.code !== 'PGRST116') {
+            introMottoTextStatus.textContent = `Помилка завантаження тексту (EN): ${mottoEnError.message}`;
+            introMottoTextStatus.style.color = 'red';
+            currentIntroMottoTextEn.value = '';
+            hasError = true;
+        } else {
+            currentIntroMottoTextEn.value = mottoEnData ? mottoEnData.setting_value : '';
+        }
+
+        // Загальний статус для текстових полів
+        if (!mottoUkError && !mottoEnError) {
+             introMottoTextStatus.textContent = 'Текст-мото завантажено.';
+             introMottoTextStatus.style.color = 'green';
+        }
+        // Якщо була хоча б одна помилка, загальний статус буде відображати це
+        if (hasError) {
+            // Можливо, тут можна вивести більш загальне повідомлення про помилку завантаження налаштувань
+            console.warn("One or more main screen settings failed to load.");
+        }
     };
+
 
     // --- ФУНКЦІЇ ЗАВАНТАЖЕННЯ ДАНИХ (FETCH) ---
 
@@ -850,8 +908,8 @@ const exportToPdf = (filename, data, fieldMap, fieldOrder, title) => {
                     case 'notifications': break;
                     case 'faq': fetchFaqsAdmin(); break;
                     case 'reviews': fetchReviewsAdmin(); break;
-                    case 'userHelp': fetchUserHelp(); break; // Завжди оновлюємо список звернень
-                    case 'mainScreenSettings': fetchMainScreenSettings(); break;
+                    case 'userHelp': fetchUserHelp(); break;
+                    case 'mainScreenSettings': fetchMainScreenSettings(); break; // Викликаємо нову функцію
                     case 'exportData': exportStatus.textContent = ''; break; 
                 }
             });
@@ -859,7 +917,7 @@ const exportToPdf = (filename, data, fieldMap, fieldOrder, title) => {
     });
 
     const hideAllFormsExcept = (activeSectionId) => {
-        const formsToHide = [notificationForm, faqForm, reviewForm, mainScreenImageForm]; 
+        const formsToHide = [notificationForm, faqForm, reviewForm, mainScreenImageForm, introMottoTextForm]; // ДОДАНО introMottoTextForm
         formsToHide.forEach(form => {
             if (form && form.closest('.dashboard-section') && form.closest('.dashboard-section').id !== activeSectionId + 'Section') {
                 if (form === notificationForm) {
@@ -873,12 +931,15 @@ const exportToPdf = (filename, data, fieldMap, fieldOrder, title) => {
                 } else if (form === mainScreenImageForm) {
                     mainScreenImageForm.reset();
                     mainScreenImageStatus.textContent = '';
-                    fetchMainScreenSettings(); 
+                    // fetchMainScreenSettings(); // Цей виклик вже є при переході на mainScreenSettings
+                } else if (form === introMottoTextForm) { // ДОДАНО
+                    introMottoTextForm.reset();
+                    introMottoTextStatus.textContent = '';
                 }
             }
         });
         doctorDetailsModal.style.display = 'none';
-        replyModal.style.display = 'none'; // Завжди приховуємо модалку звернень
+        replyModal.style.display = 'none';
     };
 
     // Форма сповіщень
@@ -1045,12 +1106,12 @@ const exportToPdf = (filename, data, fieldMap, fieldOrder, title) => {
 
     // Обробник для таблиці звернень
     userHelpList.addEventListener('click', (e) => {
-        const target = e.target.closest('button.toggle-resolved-btn'); // Змінено на toggle-resolved-btn
-        if (target) { // Прибираємо перевірку disabled, оскільки кнопка буде завжди активна
+        const target = e.target.closest('button.toggle-resolved-btn');
+        if (target) {
             const id = target.dataset.id;
             const email = target.dataset.email;
             const message = target.dataset.message;
-            const isResolved = target.dataset.isResolved === 'true'; // Отримуємо поточний статус
+            const isResolved = target.dataset.isResolved === 'true';
             openReplyModal(id, email, message, isResolved);
         }
     });
@@ -1064,7 +1125,7 @@ const exportToPdf = (filename, data, fieldMap, fieldOrder, title) => {
         }
 
         const currentStatus = toggleResolvedButton.classList.contains('resolved');
-        const newStatus = !currentStatus; // Перемикаємо статус
+        const newStatus = !currentStatus; 
         
         replyStatusMessage.textContent = 'Оновлення статусу...';
         replyStatusMessage.style.color = '#FFA500';
@@ -1156,6 +1217,44 @@ const exportToPdf = (filename, data, fieldMap, fieldOrder, title) => {
             mainScreenImageStatus.textContent = 'Помилка оновлення зображення: ' + error.message;
             mainScreenImageStatus.style.color = 'red';
             console.error('Error updating main screen image:', error);
+        }
+    });
+
+    // ДОДАНО: ОБРОБНИК ДЛЯ ФОРМИ НАЛАШТУВАНЬ ТЕКСТУ-МОТО
+    introMottoTextForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        introMottoTextStatus.textContent = 'Оновлення тексту...';
+        introMottoTextStatus.style.color = '#FFA500';
+
+        const textUk = currentIntroMottoTextUk.value.trim();
+        const textEn = currentIntroMottoTextEn.value.trim();
+
+        if (!textUk || !textEn) {
+            introMottoTextStatus.textContent = 'Будь ласка, заповніть обидва поля для тексту-мото.';
+            introMottoTextStatus.style.color = 'red';
+            return;
+        }
+
+        try {
+            // Оновлення тексту для української мови
+            const { error: errorUk } = await supabase
+                .from('app_settings')
+                .upsert({ setting_name: 'intro_motto_text_uk', setting_value: textUk }, { onConflict: 'setting_name' });
+            if (errorUk) throw errorUk;
+
+            // Оновлення тексту для англійської мови
+            const { error: errorEn } = await supabase
+                .from('app_settings')
+                .upsert({ setting_name: 'intro_motto_text_en', setting_value: textEn }, { onConflict: 'setting_name' });
+            if (errorEn) throw errorEn;
+
+            introMottoTextStatus.textContent = 'Текст-мото успішно оновлено!';
+            introMottoTextStatus.style.color = 'green';
+            // fetchMainScreenSettings(); // Викликаємо для оновлення полів, щоб відобразити збережені значення
+        } catch (error) {
+            introMottoTextStatus.textContent = 'Помилка оновлення тексту: ' + error.message;
+            introMottoTextStatus.style.color = 'red';
+            console.error('Error updating intro motto text:', error);
         }
     });
 
@@ -1337,6 +1436,5 @@ const exportToPdf = (filename, data, fieldMap, fieldOrder, title) => {
     checkAdminStatus();
     Object.values(sections).forEach(section => { if(section) section.style.display = 'none'; });
     hideAllFormsExcept(null);
-    // Якщо хочете, щоб спочатку відображалися налаштування головного екрану, розкоментуйте:
-    // showSection('mainScreenSettings'); 
+    showSection('mainScreenSettings'); 
 });

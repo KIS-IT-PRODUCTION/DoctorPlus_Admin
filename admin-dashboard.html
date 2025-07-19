@@ -291,7 +291,21 @@
                 <button type="submit">Оновити Зображення</button>
                 <p id="mainScreenImageStatus" class="message"></p>
             </form>
-        </div>
+
+            <form id="introMottoTextForm" style="margin-top: 30px; border: 1px solid #ccc; padding: 20px; border-radius: 8px; background-color: #f9f9f9;">
+                <h3>Текст-мото на головному екрані пацієнта</h3>
+                <div class="input-group">
+                    <label for="currentIntroMottoTextUk">Поточний текст (УК):</label>
+                    <textarea id="currentIntroMottoTextUk" rows="3" placeholder="Текст-мото українською"></textarea>
+                </div>
+                <div class="input-group">
+                    <label for="currentIntroMottoTextEn">Поточний текст (EN):</label>
+                    <textarea id="currentIntroMottoTextEn" rows="3" placeholder="Intro motto text in English"></textarea>
+                </div>
+                <button type="submit">Оновити Текст-мото</button>
+                <p id="introMottoTextStatus" class="message"></p>
+            </form>
+            </div>
 
         <div id="exportDataSection" class="dashboard-section" style="display: none;">
             <h2>Експорт Даних Користувачів</h2>
