@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Адмін-Панель</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="admin-dashboard.css">
     <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
@@ -30,23 +33,23 @@
         .table-container {
             overflow-x: auto;
         }
-        #faqTable, #reviewsTable {
+        #faqTable, #reviewsTable, #userHelpTable {
             width: 100%;
             border-collapse: collapse;
         }
-        #faqTable th, #faqTable td, #reviewsTable th, #reviewsTable td {
+        #faqTable th, #faqTable td, #reviewsTable th, #reviewsTable td, #userHelpTable th, #userHelpTable td {
             border: 1px solid #ddd;
             padding: 12px;
             text-align: left;
         }
-        #faqTable th, #reviewsTable th {
+        #faqTable th, #reviewsTable th, #userHelpTable th {
             background-color: #f2f2f2;
             font-weight: bold;
         }
-        #faqTable tr:nth-child(even), #reviewsTable tr:nth-child(even) {
+        #faqTable tr:nth-child(even), #reviewsTable tr:nth-child(even), #userHelpTable tr:nth-child(even) {
             background-color: #f9f9f9;
         }
-        #faqTable .actions button, #reviewsTable .actions button {
+        #faqTable .actions button, #reviewsTable .actions button, #userHelpTable .actions button {
             margin-right: 5px;
             padding: 5px 10px;
             border: none;
@@ -60,8 +63,38 @@
         .delete-btn, .delete-faq-btn {
             background-color: #dc3545; /* Червоний */
         }
+        /* Оновлений стиль для кнопки "Позначити як відреаговано" */
+        .toggle-resolved-btn {
+            background-color: #007bff; /* Синій */
+        }
+        .toggle-resolved-btn.resolved {
+            background-color: #28a745; /* Зелений */
+        }
         .secondary-button {
              background-color: #6c757d;
+        }
+        .resolved-row {
+            background-color: #e9ecef !important;
+            color: #6c757d;
+        }
+        /* Додатковий стиль для кнопок експорту, якщо потрібно */
+        .export-buttons-group {
+            margin-bottom: 15px;
+            display: flex; /* Для вирівнювання кнопок в рядок */
+            gap: 10px;    /* Відступ між кнопками */
+            flex-wrap: wrap; /* Дозволяє кнопкам переноситися на наступний рядок */
+        }
+        .export-buttons-group button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        .export-buttons-group button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
@@ -87,6 +120,9 @@
             <button id="showNotifications"><i class="fas fa-paper-plane"></i> Сповіщення</button>
             <button id="showFaq"><i class="fas fa-question-circle"></i> Керування FAQ</button>
             <button id="showReviews"><i class="fas fa-star"></i> Керування Відгуками</button>
+            <button id="showUserHelp"><i class="fas fa-life-ring"></i> Звернення</button>
+            <button id="showMainScreenSettings"><i class="fas fa-home"></i> Налаштування Головного Екрану</button>
+            <button id="showExportData"><i class="fas fa-download"></i> Експорт Даних</button>
         </nav>
 
         <div id="patientsSection" class="dashboard-section">
@@ -219,7 +255,62 @@
             </div>
         </div>
 
-    </div>
+        <div id="userHelpSection" class="dashboard-section" style="display: none;">
+            <h2>Звернення Користувачів</h2>
+            <div class="table-container">
+                <table id="userHelpTable">
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Email</th>
+                            <th>Тип</th>
+                            <th>Повідомлення</th>
+                            <th>Статус</th>
+                            <th>Дії</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userHelpList"></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div id="mainScreenSettingsSection" class="dashboard-section" style="display: none;">
+            <h2>Налаштування Головного Екрану</h2>
+            <form id="mainScreenImageForm">
+                <h3>Зображення на головному екрані пацієнта</h3>
+                <div class="input-group">
+                    <label for="currentMainScreenImageUrl">Поточний URL зображення:</label>
+                    <input type="text" id="currentMainScreenImageUrl" readonly style="background-color: #f0f0f0;">
+                    <p><a id="viewCurrentImageLink" href="#" target="_blank" style="display: none;">Переглянути поточне зображення</a></p>
+                </div>
+                <div class="input-group">
+                    <label for="newMainScreenImage">Завантажити нове зображення:</label>
+                    <input type="file" id="newMainScreenImage" accept="image/*">
+                    <p class="message">Підтримуються формати: JPG, PNG, SVG. Макс. розмір: 5MB.</p>
+                </div>
+                <button type="submit">Оновити Зображення</button>
+                <p id="mainScreenImageStatus" class="message"></p>
+            </form>
+        </div>
+
+        <div id="exportDataSection" class="dashboard-section" style="display: none;">
+            <h2>Експорт Даних Користувачів</h2>
+            <div class="input-group">
+                <label for="exportDataType">Оберіть тип даних для експорту:</label>
+                <select id="exportDataType">
+                    <option value="all_users">Всі Користувачі</option>
+                    <option value="patients">Лише Пацієнти</option>
+                    <option value="doctors">Лише Лікарі</option>
+                </select>
+            </div>
+            <div class="export-buttons-group">
+                <button id="exportSelectedCsv"><i class="fas fa-file-csv"></i> Експортувати в CSV</button>
+                <button id="exportSelectedPdf"><i class="fas fa-file-pdf"></i> Експортувати в PDF</button>
+            </div>
+            <p id="exportStatus" class="message"></p>
+        </div>
+
+    </div> 
 
     <div id="doctorDetailsModal" class="modal">
         <div class="modal-content">
@@ -262,7 +353,29 @@
         </div>
     </div>
 
+    <div id="replyModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Деталі Звернення</h2>
+            <div class="input-group">
+                <label>Email користувача:</label>
+                <input type="email" id="replyUserEmailDisplay" readonly>
+            </div>
+            <div class="input-group">
+                <label>Повідомлення користувача:</label>
+                <textarea id="originalUserMessageDisplay" rows="6" readonly style="background-color: #f0f0f0;"></textarea>
+            </div>
+            <p><strong>Статус:</strong> <span id="currentReplyStatus"></span></p>
+            <div class="modal-actions">
+                <button id="toggleResolvedButton" class="toggle-resolved-btn">
+                    <span id="toggleResolvedText"></span>
+                </button>
+            </div>
+            <p id="replyStatusMessage" class="message"></p>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="module" src="admin-dashboard.js"></script>
+    <script src="admin-dashboard.js"></script> 
 </body>
 </html>
