@@ -96,6 +96,67 @@
         .export-buttons-group button:hover {
             background-color: #0056b3;
         }
+        /* НОВІ СТИЛІ ДЛЯ СПИСКУ ЛІКАРІВ */
+        #doctorsSection h2 {
+            margin-bottom: 15px;
+        }
+        #doctorsSection .controls {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        #doctorsSection .controls select {
+            padding: 8px;
+            border-radius: 5px;
+        }
+        #doctorsList {
+            list-style: none;
+            padding: 0;
+            width: 100%;
+        }
+        .doctor-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .doctor-item .doctor-info {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            cursor: pointer; /* Підкреслює, що це клікабельний елемент */
+        }
+        .doctor-item .doctor-order {
+            font-size: 1.2em;
+            margin-right: 15px;
+            color: #007bff;
+            font-weight: bold;
+        }
+        .doctor-item .order-controls {
+            display: flex;
+            gap: 5px;
+        }
+        .doctor-item .order-controls .order-btn {
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            color: #495057;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .doctor-item .order-controls .order-btn:hover {
+            background-color: #dee2e6;
+        }
     </style>
 </head>
 <body>
@@ -132,6 +193,12 @@
 
         <div id="doctorsSection" class="dashboard-section" style="display: none;">
             <h2>Список Усіх Лікарів</h2>
+            <div class="controls">
+                <label for="specializationFilter">Фільтр за спеціалізацією:</label>
+                <select id="specializationFilter">
+                    <option value="">Всі спеціалізації</option>
+                    </select>
+            </div>
             <ul id="doctorsList"></ul>
         </div>
 

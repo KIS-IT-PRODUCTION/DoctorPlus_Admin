@@ -1,176 +1,192 @@
 /* Загальні стилі для адмін-панелі */
 html, body {
-    height: 100%; /* Забезпечуємо, що html та body займають всю висоту вікна */
+    height: 100%;
     margin: 0;
     padding: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f4f7f6;
+    background-color: #f0f2f5; /* Світліший фон */
     color: #333;
 }
 
 /* --- Верхня панель (Header) --- */
 .top-bar {
-    background-color: #2c3e50; /* Темний фон */
-    color: #ecf0f1; /* Світлий текст */
-    padding: 10px 25px;
+    background: #ffffff; /* Білий фон */
+    color: #333;
+    padding: 15px 25px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Тінь для глибини */
-    flex-wrap: wrap; /* Дозволяє елементам переноситися на новий рядок на менших екранах */
-    gap: 15px; /* Відстань між елементами */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    flex-wrap: wrap;
+    gap: 15px;
 
-    position: fixed; /* Фіксована позиція */
-    top: 0; /* Прив'язка до верхнього краю */
-    left: 0; /* Прив'язка до лівого краю */
-    width: 100%; /* На всю ширину екрану */
-    z-index: 1000; /* Перекриває інші елементи */
-    box-sizing: border-box; /* Додаємо box-sizing, щоб padding не виходив за ширину */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    box-sizing: border-box;
 }
 
 .top-bar__left {
     display: flex;
     align-items: center;
     gap: 15px;
-    /* flex-grow: 1; */ /* Можна додати для розтягування, якщо потрібно */
 }
 
 .top-bar__right {
     display: flex;
     align-items: center;
     gap: 15px;
-    flex-shrink: 0; /* Запобігає стисненню правої частини */
+    flex-shrink: 0;
 }
 
 .admin-logo {
-    height: 40px; /* Розмір логотипу */
+    height: 40px;
     width: 40px;
-    border-radius: 50%; /* Кругле лого */
-    border: 2px solid #3498db; /* Синя обводка */
-    padding: 3px; /* Невеликий відступ всередині обводки */
+    border-radius: 50%;
+    border: 2px solid #5d9cec; /* Яскравий синій */
+    padding: 3px;
     transition: transform 0.3s ease;
 }
 
 .admin-logo:hover {
-    transform: scale(1.05); /* Збільшення при наведенні */
+    transform: scale(1.1);
 }
 
 .welcome-message {
     font-size: 1.2em;
-    font-weight: 500; /* Тонший шрифт для "Ласкаво просимо" */
-    /* white-space: nowrap; */ /* Видалено, щоб дозволити тексту переноситися */
-    flex-shrink: 1; /* Дозволити стискатися, якщо не вистачає місця */
-    min-width: 0; /* Дозволяє тексту стискатися до мінімального розміру */
+    font-weight: 500;
+    flex-shrink: 1;
+    min-width: 0;
 }
 
 #adminName {
     font-weight: bold;
-    color: #3498db; /* Синій колір для імені адміністратора */
+    color: #5d9cec;
 }
 
 .admin-creation-date {
     font-size: 0.9em;
-    opacity: 0.7; /* Трохи прозоріший текст */
-    white-space: nowrap; /* Залишаємо, оскільки це дата/час */
+    opacity: 0.7;
+    white-space: nowrap;
 }
 
 .logout-button {
-    background-color: #e74c3c; /* Червона кнопка */
+    background-color: #e74c3c;
     color: white;
-    padding: 9px 18px;
+    padding: 10px 20px;
     border: none;
-    border-radius: 5px;
+    border-radius: 25px; /* Більш закруглені кути */
     cursor: pointer;
     font-size: 1em;
     font-weight: bold;
     transition: background-color 0.3s ease, transform 0.2s ease;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    flex-shrink: 0; /* Запобігає стисненню кнопки */
+    flex-shrink: 0;
 }
 
 .logout-button:hover {
-    background-color: #c0392b; /* Темніше червоний при наведенні */
-    transform: translateY(-1px); /* Невеликий підйом кнопки */
+    background-color: #c0392b;
+    transform: translateY(-2px);
 }
 
 /* --- Загальні стилі для контейнера та секцій --- */
 .dashboard-container {
-    margin-top: 70px; /* Приблизно висота верхньої панелі + невеликий відступ */
-    padding: 20px;
+    margin-top: 85px; /* Збільшено відступ зверху, щоб не перекривалося */
+    padding: 25px;
     max-width: 1200px;
-    margin-left: auto; /* Центрування */
-    margin-right: auto; /* Центрування */
+    margin-left: auto;
+    margin-right: auto;
     background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-    min-height: calc(100vh - 70px - 40px); /* Висота екрану мінус верхня панель і відступи (70px top-bar, 40px combined top/bottom margin for container) */
-    box-sizing: border-box; /* Додаємо box-sizing */
+    border-radius: 12px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+    min-height: calc(100vh - 85px - 50px);
+    box-sizing: border-box;
 }
-
 
 h1 {
     color: #2c3e50;
     text-align: center;
     margin-bottom: 30px;
-    font-size: 2.2em;
-    border-bottom: 2px solid #3498db;
+    font-size: 2.5em;
+    border-bottom: 3px solid #5d9cec;
     padding-bottom: 10px;
 }
 
 h2 {
     color: #34495e;
-    margin-top: 25px;
-    margin-bottom: 15px;
-    font-size: 1.8em;
-    border-left: 5px solid #3498db;
-    padding-left: 10px;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    font-size: 2em;
+    border-left: 6px solid #5d9cec;
+    padding-left: 12px;
 }
 
+/* --- СТИЛІ ДЛЯ ВКЛАДОК (NAV BUTTONS) --- */
 .dashboard-nav {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 15px;
     margin-bottom: 30px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #e0e6ed;
     padding-bottom: 20px;
 }
 
 .dashboard-nav button {
-    background-color: #3498db;
-    color: white;
-    padding: 12px 25px;
+    background-color: #f0f2f5;
+    color: #6c757d;
+    padding: 15px 30px;
     border: none;
-    border-radius: 25px;
+    border-radius: 30px;
     cursor: pointer;
     font-size: 1.1em;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     display: flex;
     align-items: center;
-    gap: 8px; /* Відступ між іконкою та текстом */
-}
-
-.dashboard-nav button i {
-    margin-right: 5px; /* Невеликий відступ праворуч від іконки */
+    gap: 10px;
 }
 
 .dashboard-nav button:hover {
-    background-color: #2980b9;
-    transform: translateY(-2px);
+    background-color: #e9ecef;
+    color: #333;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
 
-.dashboard-nav button:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.4);
+/* Стиль для активної вкладки */
+.dashboard-nav button.active {
+    background-color: #5d9cec;
+    color: white;
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(93, 156, 236, 0.4);
+    border-bottom: 3px solid #3c7cc0;
 }
 
+.dashboard-nav button.active:hover {
+    background-color: #4a8ad8; /* Трохи темніший синій при наведенні на активну */
+}
+
+.dashboard-nav button i {
+    font-size: 1.2em;
+    transition: transform 0.3s ease;
+}
+
+.dashboard-nav button.active i {
+    transform: scale(1.1);
+}
+
+/* --- Інші стилі --- */
 .dashboard-section {
-    background-color: #ecf0f1;
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+    background-color: #f8f9fa;
+    padding: 25px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e0e6ed;
 }
 
 .dashboard-section p {
@@ -187,14 +203,20 @@ h2 {
 
 .dashboard-section li {
     background-color: #ffffff;
-    margin-bottom: 8px;
-    padding: 12px 20px;
-    border-radius: 5px;
+    margin-bottom: 10px;
+    padding: 15px 25px;
+    border-radius: 8px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: background-color 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    border-left: 5px solid transparent;
+}
+
+.dashboard-section li:hover {
+    border-left: 5px solid #5d9cec;
+    transform: translateX(5px);
 }
 
 .doctor-item {
@@ -202,12 +224,12 @@ h2 {
 }
 
 .doctor-item:hover {
-    background-color: #e0e6e9; /* Змінений колір при наведенні */
+    background-color: #f7f9fb;
 }
 
 /* Значок сповіщення */
 .notification-count {
-    background-color: #e74c3c; /* Червоний для сповіщень */
+    background-color: #e74c3c;
     color: white;
     border-radius: 50%;
     padding: 3px 8px;
@@ -215,25 +237,25 @@ h2 {
     font-weight: bold;
     margin-left: 8px;
     vertical-align: middle;
-    display: inline-flex; /* Для кращого центрування */
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 22px; /* Мінімальна ширина для круглої форми */
-    height: 22px; /* Мінімальна висота */
+    min-width: 22px;
+    height: 22px;
 }
 
 /* Стилі для модального вікна (Doctor Details Modal) */
 .modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1000; /* Sit on top */
+    display: none;
+    position: fixed;
+    z-index: 1000;
     left: 0;
     top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
-    display: flex; /* Use flexbox to center content */
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.6);
+    display: flex;
     justify-content: center;
     align-items: center;
 }
@@ -242,18 +264,17 @@ h2 {
     background-color: #fefefe;
     margin: auto;
     padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    max-width: 700px;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    max-width: 800px;
     width: 90%;
     position: relative;
-    animation: fadeIn 0.3s ease-out; /* Анімація появи */
+    animation: fadeIn 0.4s ease-out;
 }
 
 .close-button {
     color: #aaa;
-    float: right;
-    font-size: 28px;
+    font-size: 32px;
     font-weight: bold;
     position: absolute;
     top: 15px;
@@ -269,19 +290,20 @@ h2 {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-20px); }
+    from { opacity: 0; transform: translateY(-30px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
 #doctorDetailsContent p {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
+    gap: 15px;
+    margin-bottom: 12px;
     flex-wrap: wrap;
+    font-size: 1.1em;
 }
 #doctorDetailsContent p strong {
-    min-width: 160px; /* Збільшено ширину для назв полів */
+    min-width: 180px;
     color: #444;
 }
 #doctorDetailsContent input[type="text"],
@@ -290,57 +312,57 @@ h2 {
 #doctorDetailsContent input[type="number"],
 #doctorDetailsContent textarea {
     flex-grow: 1;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    padding: 12px;
+    border: 1px solid #dcdfe6;
+    border-radius: 6px;
     font-size: 1em;
     width: 100%;
     box-sizing: border-box;
-    transition: border-color 0.3s ease;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 #doctorDetailsContent input:focus,
 #doctorDetailsContent textarea:focus {
-    border-color: #3498db;
+    border-color: #5d9cec;
     outline: none;
-    box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+    box-shadow: 0 0 8px rgba(93, 156, 236, 0.2);
 }
 
 #doctorDetailsContent textarea {
     resize: vertical;
-    min-height: 60px;
+    min-height: 80px;
 }
 #doctorDetailsContent a {
     word-break: break-all;
-    color: #3498db;
+    color: #5d9cec;
     text-decoration: none;
     transition: color 0.3s ease;
 }
 #doctorDetailsContent a:hover {
     text-decoration: underline;
-    color: #2980b9;
+    color: #4a8ad8;
 }
 
 .modal-actions {
-    margin-top: 25px;
+    margin-top: 30px;
     display: flex;
-    gap: 12px;
+    gap: 15px;
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
-    border-top: 1px solid #eee;
-    padding-top: 20px;
+    border-top: 1px solid #e0e6ed;
+    padding-top: 25px;
 }
 
 .modal-actions button,
 #sendRejectionButton {
-    padding: 10px 22px;
+    padding: 12px 25px;
     border: none;
-    border-radius: 5px;
+    border-radius: 25px;
     cursor: pointer;
-    font-size: 0.95em;
+    font-size: 1em;
     font-weight: bold;
-    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 #approveDoctorButton {
@@ -349,7 +371,7 @@ h2 {
 }
 #approveDoctorButton:hover {
     background-color: #218838;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
 }
 
 #rejectDoctorButton {
@@ -358,7 +380,7 @@ h2 {
 }
 #rejectDoctorButton:hover {
     background-color: #c82333;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
 }
 
 #saveDoctorProfileButton {
@@ -367,16 +389,16 @@ h2 {
 }
 #saveDoctorProfileButton:hover {
     background-color: #0056b3;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
 }
 
 #revokeDoctorAccessButton {
-    background-color: #ff8c00;
-    color: white;
+    background-color: #ffc107;
+    color: #333;
 }
 #revokeDoctorAccessButton:hover {
-    background-color: #cc7000;
-    transform: translateY(-1px);
+    background-color: #e0a800;
+    transform: translateY(-2px);
 }
 
 #deleteDoctorProfileButton {
@@ -385,16 +407,16 @@ h2 {
 }
 #deleteDoctorProfileButton:hover {
     background-color: #5a6268;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
 }
 
 #rejectionReasonGroup {
-    margin-top: 20px;
+    margin-top: 25px;
     width: 100%;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    padding-top: 15px;
+    padding-top: 20px;
     border-top: 1px dashed #ddd;
 }
 
@@ -415,19 +437,19 @@ h2 {
 }
 
 #sendRejectionButton {
-    background-color: #ffc107;
-    color: #333;
-    align-self: flex-end; /* Вирівнювання кнопки праворуч */
+    background-color: #e74c3c;
+    color: white;
+    align-self: flex-end;
 }
 #sendRejectionButton:hover {
-    background-color: #e0a800;
-    transform: translateY(-1px);
+    background-color: #c0392b;
+    transform: translateY(-2px);
 }
 
 .message {
-    margin-top: 10px;
-    padding: 8px 15px;
-    border-radius: 5px;
+    margin-top: 15px;
+    padding: 10px 20px;
+    border-radius: 8px;
     text-align: center;
     font-weight: bold;
 }
@@ -446,11 +468,11 @@ h2 {
 #notificationForm {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    padding: 15px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    gap: 20px;
+    padding: 20px;
+    background-color: #f9fbfc;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
 }
 
 .input-group {
@@ -459,79 +481,74 @@ h2 {
 }
 
 .input-group label {
-    margin-bottom: 5px;
-    font-weight: bold;
+    margin-bottom: 8px;
+    font-weight: 600;
     color: #555;
 }
 
 .input-group input,
 .input-group select,
 .input-group textarea {
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    padding: 12px;
+    border: 1px solid #dcdfe6;
+    border-radius: 6px;
     font-size: 1em;
     width: 100%;
     box-sizing: border-box;
-    transition: border-color 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .input-group input:focus,
 .input-group select:focus,
 .input-group textarea:focus {
-    border-color: #3498db;
+    border-color: #5d9cec;
     outline: none;
-    box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+    box-shadow: 0 0 8px rgba(93, 156, 236, 0.2);
 }
 
 #notificationForm button[type="submit"] {
     background-color: #28a745;
     color: white;
-    padding: 12px 25px;
+    padding: 12px 30px;
     border: none;
-    border-radius: 5px;
+    border-radius: 25px;
     cursor: pointer;
     font-size: 1.1em;
     font-weight: bold;
-    transition: background-color 0.3s ease;
-    align-self: flex-start; /* Вирівнювання кнопки ліворуч */
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    align-self: flex-start;
+    margin-top: 10px;
 }
 
 #notificationForm button[type="submit"]:hover {
     background-color: #218838;
+    transform: translateY(-2px);
 }
 
 /* Медіа-запити для адаптивності */
 @media (max-width: 768px) {
     .top-bar {
-        /* Зменшуємо gap для мобільних пристроїв */
+        flex-direction: column;
+        align-items: flex-start;
         gap: 10px;
-        padding: 10px 15px; /* Зменшуємо горизонтальний padding */
+        padding: 15px;
     }
-
-    .top-bar__left,
     .top-bar__right {
-        flex-direction: column; /* Розташовуємо елементи вертикально */
-        align-items: flex-start; /* Вирівнюємо ліворуч */
-        width: 100%; /* Займаємо всю ширину */
-        gap: 5px; /* Зменшуємо gap між елементами в колонці */
-    }
-
-    .top-bar__right {
-        align-items: flex-end; /* Вирівнюємо праву частину праворуч */
-    }
-
-    .admin-creation-date {
-        /* white-space: normal; */ /* Можна дозволити перенос, якщо дуже довго */
-        text-align: right; /* Вирівнювання дати праворуч */
+        align-items: flex-start;
         width: 100%;
+        gap: 10px;
     }
-
+    .admin-creation-date {
+        align-self: flex-start;
+    }
     .logout-button {
-        width: auto; /* Дозволити кнопці мати автоматичну ширину */
-        align-self: flex-end; /* Вирівняти кнопку виходу праворуч */
+        align-self: flex-start;
+        width: auto;
     }
 
+    .dashboard-container {
+        margin-top: 150px;
+    }
 
     .dashboard-nav {
         flex-direction: column;
@@ -556,14 +573,20 @@ h2 {
     #sendRejectionButton {
         width: 100%;
     }
+
+    h1 {
+        font-size: 2em;
+    }
+    
+    h2 {
+        font-size: 1.7em;
+    }
 }
 
 @media (max-width: 480px) {
     .dashboard-container {
         padding: 15px;
-        margin-top: 70px; /* Залишаємо відступ і тут */
-        margin-left: auto;
-        margin-right: auto;
+        margin-top: 160px;
     }
 
     h1 {
@@ -583,7 +606,7 @@ h2 {
     }
 
     .logout-button {
-        padding: 7px 12px;
+        padding: 8px 15px;
         font-size: 0.9em;
     }
 }
