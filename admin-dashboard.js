@@ -121,6 +121,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const inputConsultationCostRange = document.getElementById('inputConsultationCostRange');
     const inputSearchTags = document.getElementById('inputSearchTags');
     const inputBankDetails = document.getElementById('inputBankDetails');
+    const inputDisplayOrder = document.getElementById('inputDisplayOrder'); // <-- НОВЕ ПОЛЕ
     const detailCertificate = document.getElementById('detailCertificate');
     const detailDiploma = document.getElementById('detailDiploma');
     const displayDoctorCheck = document.getElementById('displayDoctorCheck');
@@ -593,7 +594,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 0: { cellWidth: 10 }, 1: { cellWidth: 10 }, 2: { cellWidth: 10 }, 3: { cellWidth: 10 }, 4: { cellWidth: 10 }, 5: { cellWidth: 15 },
                 6: { cellWidth: 15 }, 7: { cellWidth: 10 }, 8: { cellWidth: 15 }, 9: { cellWidth: 15 }, 10: { cellWidth: 20 }, 11: { cellWidth: 15 },
                 12: { cellWidth: 15 }, 13: { cellWidth: 15 }, 14: { cellWidth: 20 }, 15: { cellWidth: 20 }, 16: { cellWidth: 20 }, 17: { cellWidth: 20 },
-                18: { cellWidth: 10 }, 19: { cellWidth: 20 }, 20: { cellWidth: 10 }, 21: { cellWidth: 15 }, 22: { cellWidth: 15 }, 23: { cellWidth: 15 } // Додані стилі для нових полів
+                18: { cellWidth: 10 }, 19: { cellWidth: 20 }, 20: { cellWidth: 10 }, 21: { cellWidth: 15 }, 22: { cellWidth: 15 }, 23: { cellWidth: 15 }
             },
             didDrawPage: (data) => {
                 doc.setFontSize(10);
@@ -753,6 +754,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         inputConsultationCostRange.value = data.consultation_cost_range || '';
         inputSearchTags.value = Array.isArray(data.search_tags) ? JSON.stringify(data.search_tags) : (data.search_tags || '');
         inputBankDetails.value = data.bank_details || '';
+        inputDisplayOrder.value = data.display_order || ''; // <-- Заповнення нового поля
         detailCertificate.href = data.certificate_photo_url || '#';
         detailCertificate.textContent = data.certificate_photo_url ? 'Переглянути сертифікат' : 'Немає';
         detailCertificate.style.pointerEvents = data.certificate_photo_url ? 'auto' : 'none';
@@ -1192,6 +1194,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             doctorProfileStatus.style.color = 'red';
             return;
         }
+
         const updatedData = {
             full_name: inputFullName.value.trim(),
             email: inputEmail.value.trim(),
@@ -1206,7 +1209,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             consultation_cost: parseFloat(inputConsultationCost.value) || null,
             consultation_cost_range: inputConsultationCostRange.value.trim(),
             search_tags: searchTagsArray,
-            bank_details: inputBankDetails.value.trim()
+            bank_details: inputBankDetails.value.trim(),
+            display_order: parseInt(inputDisplayOrder.value, 10) || null // <-- Оновлення поля
         };
         const { error } = await supabase.from('anketa_doctor').update(updatedData).eq('user_id', currentDoctorId);
         if (error) {
