@@ -3,63 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Вхід / Реєстрація</title>
+    <title>Doctor Plus – Ваш помічник у світі здоров'я</title>
+    
     <link rel="stylesheet" href="style.css">
-        <link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
-
+    <link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
-    <div>        <img style="align-items: center; flex-direction: row;justify-content: center;" src="assets/icon.svg">
-</div>
-    <div class="auth-container">
-        <h1>Адміністратор додатку Doctor Plus</h1>
-        <div class="auth-toggle">
-            <button id="showLogin" class="active">Вхід</button>
-            <button id="showRegister">Реєстрація</button>
-        </div>
 
-        <div id="loginSection" class="auth-section">
-            <h2>Вхід</h2>
-            <form id="loginForm">
-                <div class="input-group">
-                    <label for="loginEmail">Email:</label>
-                    <input type="email" id="loginEmail" required autocomplete="username">
+    <header class="hero-section">
+        <div class="container">
+           <nav class="navbar">
+    <div class="logo">
+        <img src="assets/icon.svg" alt="Doctor Plus Logo">
+        <span>Doctor Plus</span>
+    </div>
+    <div class="nav-links">
+        <a href="https://www.doctor-plus.pp.ua/support" class="nav-link">Підтримка</a>
+        <a href="#" id="openLoginModal" class="nav-link admin-button">
+            <i class="fa-solid fa-user-doctor"></i> Панель адміністратора
+        </a>
+    </div>
+</nav>
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1>Ваш особистий помічник у світі здоров'я</h1>
+                    <p>Записуйтесь на прийом, отримуйте онлайн-консультації та зберігайте всі медичні дані в одному безпечному місці. Doctor Plus — це турбота про ваше здоров'я, доступна 24/7.</p>
+                    <div class="cta-buttons">
+                        <a href="#" class="btn btn-primary">
+                            <i class="fa-brands fa-apple"></i> Завантажити з App Store
+                        </a>
+                        <a href="#" class="btn btn-secondary">
+                            <i class="fa-brands fa-google-play"></i> Доступно в Google Play
+                        </a>
+                    </div>
                 </div>
-                <div class="input-group">
-                    <label for="loginPassword">Пароль:</label>
-                    <input type="password" id="loginPassword" required autocomplete="current-password">
+                <div class="hero-image">
+                    <img src="assets/Simulator Screenshot - iPhone 16 Pro Max - 2025-08-22 at 20.09.24.png" alt="Інтерфейс додатку Doctor Plus на смартфоні">
                 </div>
-                <button type="submit" id="loginButton">Увійти</button>
-                <p id="loginErrorMessage" class="message error"></p>
-            </form>
+            </div>
         </div>
+    </header>
 
-        <div id="registerSection" class="auth-section" style="display: none;">
-            <h2>Реєстрація</h2>
-            <form id="registerForm">
-                <div class="input-group">
-                    <label for="registerFullName">Повне ім'я:</label>
-                    <input type="text" id="registerFullName" required autocomplete="name">
+    <main>
+        <section class="features-section">
+            <div class="container">
+                <h2>Все, що потрібно для вашого здоров'я</h2>
+                <p class="section-subtitle">Ми зібрали ключові функції, щоб зробити догляд за здоров'ям простим та зручним.</p>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <i class="fa-solid fa-video feature-icon"></i>
+                        <h3>Онлайн-консультації</h3>
+                        <p>Отримуйте поради від кваліфікованих лікарів, не виходячи з дому, через безпечний відеозв'язок.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fa-solid fa-calendar-check feature-icon"></i>
+                        <h3>Запис до лікаря</h3>
+                        <p>Легко знаходьте потрібного спеціаліста та бронзуйте зручний час для візиту всього в кілька кліків.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fa-solid fa-notes-medical feature-icon"></i>
+                        <h3>Електронна медкарта</h3>
+                        <p>Зберігайте історію хвороб, результати аналізів та рецепти в одному надійно захищеному місці.</p>
+                    </div>
+                     <div class="feature-card">
+                        <i class="fa-solid fa-pills feature-icon"></i>
+                        <h3>Нагадування про ліки</h3>
+                        <p>Налаштуйте персональні сповіщення, щоб ніколи не пропускати прийом важливих медикаментів.</p>
+                    </div>
                 </div>
-                <div class="input-group">
-                    <label for="registerEmail">Email:</label>
-                    <input type="email" id="registerEmail" required autocomplete="email">
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Doctor Plus. Всі права захищено.</p>
+            <div class="footer-links">
+                <a href="https://www.doctor-plus.pp.ua/support">Служба підтримки</a>
+                <a href="#">Політика конфіденційності</a>
+            </div>
+        </div>
+    </footer>
+
+    <div id="authModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-btn">&times;</button>
+            <div class="auth-container">
+                <h1>Панель адміністратора</h1>
+                <div class="auth-toggle">
+                    <button id="showLogin" class="active">Вхід</button>
+                    <button id="showRegister">Реєстрація</button>
                 </div>
-                <div class="input-group">
-                    <label for="registerPassword">Пароль:</label>
-                    <input type="password" id="registerPassword" required autocomplete="new-password">
+                <div id="loginSection" class="auth-section">
+                    <form id="loginForm">
+                        <div class="input-group"><label for="loginEmail">Email:</label><input type="email" id="loginEmail" required autocomplete="username"></div>
+                        <div class="input-group"><label for="loginPassword">Пароль:</label><input type="password" id="loginPassword" required autocomplete="current-password"></div>
+                        <button type="submit" id="loginButton">Увійти</button>
+                        <p id="loginErrorMessage" class="message error"></p>
+                    </form>
                 </div>
-                <div class="input-group">
-                    <label for="registerConfirmPassword">Підтвердіть пароль:</label>
-                    <input type="password" id="registerConfirmPassword" required autocomplete="new-password">
+                <div id="registerSection" class="auth-section" style="display: none;">
+                    <form id="registerForm">
+                        <div class="input-group"><label for="registerFullName">Повне ім'я:</label><input type="text" id="registerFullName" required autocomplete="name"></div>
+                        <div class="input-group"><label for="registerEmail">Email:</label><input type="email" id="registerEmail" required autocomplete="email"></div>
+                        <div class="input-group"><label for="registerPassword">Пароль:</label><input type="password" id="registerPassword" required autocomplete="new-password"></div>
+                        <div class="input-group"><label for="registerConfirmPassword">Підтвердіть пароль:</label><input type="password" id="registerConfirmPassword" required autocomplete="new-password"></div>
+                        <button type="submit" id="registerButton">Зареєструватися</button>
+                        <p id="registerErrorMessage" class="message error"></p>
+                    </form>
                 </div>
-                <button type="submit" id="registerButton">Зареєструватися</button>
-                <p id="registerErrorMessage" class="message error"></p>
-            </form>
+            </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="module" src="script.js"></script>
-</body>
+    <script src="main.js"></script> </body>
 </html>

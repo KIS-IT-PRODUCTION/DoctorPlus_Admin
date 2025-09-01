@@ -1,118 +1,379 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f2f5;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+/* --- Глобальні змінні та базові стилі --- */
+:root {
+    --primary-color: #007AFF;    /* Синій для акцентів */
+    --secondary-color: #4CD964; /* Зелений для кнопок дії */
+    --text-color: #1d1d1f;       /* Темно-сірий для основного тексту */
+    --background-light: #f5f5f7; /* Світло-сірий фон для секцій */
+    --white-color: #ffffff;      /* Білий */
+    --border-color: #d2d2d7;     /* Світло-сірий для рамок */
+}
+
+* {
     margin: 0;
-    color: #333;
-}
-
-.login-container {
-    background-color: #ffffff;
-    padding: 40px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 450px; /* Трохи збільшено для двох секцій */
-    text-align: center;
-}
-
-h2 {
-    margin-top: 15px; /* Залишаємо місце для кнопок перемикання */
-    margin-bottom: 30px;
-    color: #1a73e8;
-}
-
-/* Стилі для перемикача Вхід/Реєстрація */
-.auth-toggle {
-    display: flex;
-    margin-bottom: 25px;
-    border-radius: 5px;
-    overflow: hidden;
-    background-color: #e0e0e0;
-}
-
-.auth-toggle button {
-    flex: 1;
-    padding: 12px 0;
-    border: none;
-    background-color: transparent;
-    color: #555;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.auth-toggle button.active {
-    background-color: #1a73e8;
-    color: white;
-    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-}
-
-.auth-toggle button:hover:not(.active) {
-    background-color: #d0d0d0;
-}
-
-.input-group {
-    margin-bottom: 20px;
-    text-align: left;
-}
-
-.input-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-    color: #555;
-}
-
-.input-group input[type="email"],
-.input-group input[type="text"],
-.input-group input[type="password"] {
-    width: calc(100% - 20px);
-    padding: 12px 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 16px;
+    padding: 0;
     box-sizing: border-box;
 }
 
-.input-group input[type="email"]:focus,
-.input-group input[type="password"]:focus {
-    border-color: #1a73e8;
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+body {
+    font-family: 'Manrope', sans-serif;
+    color: var(--text-color);
+    background-color: var(--white-color);
+    line-height: 1.6;
 }
 
-button[type="submit"] { /* Застосовуємо до кнопок відправки */
-    background-color: #1a73e8;
-    color: white;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 4px;
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* --- Секція шапки (Hero Section) та навігація --- */
+.hero-section {
+    background: linear-gradient(135deg, #e0f7fa 0%, #ffffff 100%);
+    padding-bottom: 60px;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    font-size: 24px;
+    font-weight: 800;
+    text-decoration: none;
+    color: var(--text-color);
+}
+
+.logo img {
+    width: 40px;
+    height: 40px;
+    margin-right: 12px;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: var(--primary-color);
+    font-weight: 600;
+    transition: opacity 0.3s ease;
+}
+
+.nav-link:hover {
+    opacity: 0.8;
+}
+
+.admin-button {
+    border: 1px solid var(--border-color);
+    padding: 8px 16px;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+.admin-button:hover {
+    background-color: var(--white-color);
+    border-color: var(--primary-color);
+}
+
+.hero-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 40px 0;
+}
+
+.hero-text {
+    flex: 1;
+    padding-right: 40px;
+}
+
+.hero-text h1 {
+    font-size: 48px;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 20px;
+    max-width: 500px;
+}
+
+.hero-text p {
     font-size: 18px;
-    cursor: pointer;
-    width: 100%;
-    transition: background-color 0.3s ease;
-    margin-top: 10px; /* Відступ зверху для кнопок */
+    margin-bottom: 30px;
+    max-width: 480px;
+    color: #555;
+}
+.hero-image img{ 
+    width: 300px;
 }
 
-button[type="submit"]:hover {
-    background-color: #155bb5;
+.cta-buttons {
+    display: flex;
+    gap: 15px;
 }
 
-button[type="submit"]:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
+.btn {
+    display: inline-block;
+    padding: 14px 28px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.error-message {
-    color: #d32f2f;
-    margin-top: 15px;
-    font-size: 14px;
+.btn-primary {
+    background-color: var(--primary-color);
+    color: var(--white-color);
+}
+
+.btn-secondary {
+    background-color: var(--white-color);
+    color: var(--primary-color);
+    border: 1px solid var(--border-color);
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.hero-image {
+    flex: 1;
     text-align: center;
-    min-height: 20px;
+}
+
+.hero-image img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* --- Секція послуг (Features) --- */
+.features-section {
+    padding: 80px 0;
+    background-color: var(--background-light);
+    text-align: center;
+}
+
+.features-section h2 {
+    font-size: 36px;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.section-subtitle {
+    font-size: 18px;
+    color: #555;
+    margin-bottom: 60px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    text-align: left;
+}
+
+.feature-card {
+    background-color: var(--white-color);
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.feature-icon {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 20px;
+}
+
+.feature-card h3 {
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+
+/* --- Підвал (Footer) --- */
+.footer {
+    padding: 40px 0;
+    background-color: var(--white-color);
+    border-top: 1px solid var(--border-color);
+}
+
+.footer .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer p {
+    color: #888;
+}
+
+.footer-links a {
+    text-decoration: none;
+    color: #555;
+    margin-left: 20px;
+    transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: var(--primary-color);
+}
+
+/* --- Стилі для Модального Вікна --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: none; /* Приховано за замовчуванням */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: var(--white-color);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 450px;
+    position: relative;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: var(--border-color);
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.modal-close-btn:hover {
+    color: var(--text-color);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* --- Стилі для форми всередині модального вікна --- */
+.auth-container {
+    text-align: center;
+}
+.auth-container h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+.auth-toggle {
+    display: flex;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    margin-bottom: 25px;
+    overflow: hidden;
+}
+.auth-toggle button {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    color: #888;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+.auth-toggle button.active {
+    background-color: var(--primary-color);
+    color: var(--white-color);
+}
+.auth-section {
+    text-align: left;
+}
+.input-group {
+    margin-bottom: 15px;
+}
+.input-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+.input-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 16px;
+}
+.auth-container button[type="submit"] {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--secondary-color);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+.auth-container button[type="submit"]:hover {
+    background-color: #3fbc50;
+}
+.message.error {
+    color: #ff3b30;
+    margin-top: 10px;
+    text-align: center;
+    font-size: 14px;
+}
+
+/* --- Адаптивний дизайн --- */
+@media (max-width: 768px) {
+    .hero-content {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .hero-text {
+        padding-right: 0;
+        margin-bottom: 40px;
+    }
+    
+    .hero-text h1 {
+        font-size: 36px;
+    }
+
+    .cta-buttons {
+        justify-content: center;
+        flex-direction: column;
+    }
+    
+    .footer .container {
+        flex-direction: column;
+        gap: 15px;
+    }
 }

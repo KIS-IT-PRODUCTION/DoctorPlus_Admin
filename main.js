@@ -1,13 +1,34 @@
-// script.js
-
 document.addEventListener('DOMContentLoaded', () => {
+    // --- Логіка для керування модальним вікном ---
+    const authModal = document.getElementById('authModal');
+    const openLoginModalBtn = document.getElementById('openLoginModal');
+    const closeBtn = document.querySelector('.modal-close-btn');
+
+    if (openLoginModalBtn && authModal && closeBtn) {
+        openLoginModalBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            authModal.style.display = 'flex';
+        });
+
+        closeBtn.addEventListener('click', () => {
+            authModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === authModal) {
+                authModal.style.display = 'none';
+            }
+        });
+    } else {
+        console.error('ПОМИЛКА: Не знайдено елементи для модального вікна (кнопка відкриття або саме вікно).');
+    }
+
     // --- Ініціалізація Supabase клієнта ---
     const SUPABASE_URL = 'https://yslchkbmupuyxgidnzrb.supabase.co'; // Ваш URL проекту Supabase
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzbGNoa2JtdXB1eXhnaWRuenJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc5MDM4MDAsImV4cCI6MjA2MzQ3OTgwMH0.fQnzfcEo3tgm6prq9tdwZyQ_fXGrNvJ_abnjs0woR1Y'; // Ваш публічний "Anon Key"
 
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
         auth: {
-            // storage: AsyncStorage, // ЦЕЙ РЯДОК МАЄ БУТИ ВИДАЛЕНИЙ ДЛЯ ВЕБ-ВЕРСІЇ!
             autoRefreshToken: true,
             persistSession: true,
             detectSessionInUrl: false,
@@ -29,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Елементи для реєстрації ---
     const registerForm = document.getElementById('registerForm');
-    const registerFullNameInput = document.getElementById('registerFullName'); // НОВЕ ПОЛЕ
+    const registerFullNameInput = document.getElementById('registerFullName');
     const registerEmailInput = document.getElementById('registerEmail');
     const registerPasswordInput = document.getElementById('registerPassword');
     const registerConfirmPasswordInput = document.getElementById('registerConfirmPassword');
@@ -37,40 +58,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const registerErrorMessage = document.getElementById('registerErrorMessage');
 
     
-    // --- Важлива перевірка наявності всіх елементів ---
+    // --- Важлива перевірка наявності всіх елементів форми ---
     if (!showLoginButton || !showRegisterButton || !loginSection || !registerSection ||
         !loginForm || !loginEmailInput || !loginPasswordInput || !loginButton || !loginErrorMessage ||
-        !registerForm || !registerFullNameInput || !registerEmailInput || !registerPasswordInput || !registerConfirmPasswordInput || !registerButton || !registerErrorMessage) { // ОНОВЛЕНО
-        console.error('ПОМИЛКА: Один або кілька необхідних елементів DOM не знайдено. Перевірте ID в HTML та JS.');
+        !registerForm || !registerFullNameInput || !registerEmailInput || !registerPasswordInput || !registerConfirmPasswordInput || !registerButton || !registerErrorMessage) {
+        console.error('ПОМИЛКА: Один або кілька необхідних елементів DOM для форми не знайдено. Перевірте ID в HTML та JS.');
         return;
     }
 
-    // --- Функція для перемикання видимості форм ---
-    const showSection = (sectionName) => {
-        if (sectionName === 'login') {
-            loginSection.style.display = 'block';
-            registerSection.style.display = 'none';
-            showLoginButton.classList.add('active');
-            showRegisterButton.classList.remove('active');
-            loginErrorMessage.textContent = '';
-        } else {
-            loginSection.style.display = 'none';
-            registerSection.style.display = 'block';
-            showLoginButton.classList.remove('active');
-            showRegisterButton.classList.add('active');
-            registerErrorMessage.textContent = '';
-        }
-    };
-
-    // --- Слухачі подій для кнопок перемикання ---
+    // --- Слухачі подій для кнопок перемикання Вхід/Реєстрація ---
     showLoginButton.addEventListener('click', () => {
-        console.log('Клік на кнопку "Вхід"');
-        showSection('login');
+        loginSection.style.display = 'block';
+        registerSection.style.display = 'none';
+        showLoginButton.classList.add('active');
+        showRegisterButton.classList.remove('active');
+        loginErrorMessage.textContent = '';
     });
 
     showRegisterButton.addEventListener('click', () => {
-        console.log('Клік на кнопку "Реєстрація"');
-        showSection('register');
+        loginSection.style.display = 'none';
+        registerSection.style.display = 'block';
+        showLoginButton.classList.remove('active');
+        showRegisterButton.classList.add('active');
+        registerErrorMessage.textContent = '';
     });
 
      // --- Логіка входу для адміністраторів ---
@@ -98,12 +108,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (error) {
-                console.error('Помилка входу Supabase (script.js - signInWithPassword):', error.message);
+                console.error('Помилка входу Supabase:', error.message);
                 loginErrorMessage.textContent = error.message || 'Неправильний email або пароль.';
-                loginErrorMessage.style.color = '#d32f2f';
             } else if (data.user) {
-                console.log('Успішний вхід користувача (script.js):', data.user);
-
                 const { data: adminProfile, error: adminProfileError } = await supabase
                     .from('profiles_admin')
                     .select('user_id')
@@ -111,18 +118,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     .single();
 
                 if (adminProfileError || !adminProfile) {
-                    console.warn('Користувач не є адміністратором (профіль не знайдено в profiles_admin).');
-                    // *** ЦІ ЛОГИ ДУЖЕ ВАЖЛИВІ ДЛЯ ДІАГНОСТИКИ ***
-                    console.error('Помилка Supabase під час перевірки адмін-профілю (script.js):', adminProfileError);
-                    console.log('Отриманий adminProfile під час перевірки (script.js):', adminProfile);
-                    // Якщо логи все ще зникають дуже швидко, розкоментуйте наступний рядок
-                    // debugger; // Це зупинить виконання JS у браузері, дозволяючи вам детально переглянути змінні
-
                     await supabase.auth.signOut();
                     loginErrorMessage.textContent = 'У вас немає прав доступу до адмін-панелі.';
-                    loginErrorMessage.style.color = '#d32f2f';
                 } else {
-                    console.log('Користувач є адміністратором. Перенаправлення на адмін-панель...');
                     loginErrorMessage.textContent = 'Вхід успішний! Перенаправлення...';
                     loginErrorMessage.style.color = '#4CAF50';
                     setTimeout(() => {
@@ -131,13 +129,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } else {
                 loginErrorMessage.textContent = 'Неправильний email або пароль.';
-                loginErrorMessage.style.color = '#d32f2f';
             }
 
         } catch (err) {
-            console.error('Невідома помилка під час входу (script.js):', err);
+            console.error('Невідома помилка під час входу:', err);
             loginErrorMessage.textContent = 'Виникла невідома помилка. Спробуйте ще раз.';
-            loginErrorMessage.style.color = '#d32f2f';
         } finally {
             loginButton.disabled = false;
             loginButton.textContent = 'Увійти';
@@ -148,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
     registerForm.addEventListener('submit', async (event) => {
         event.preventDefault();
 
-        const fullName = registerFullNameInput.value.trim(); // НОВЕ: отримуємо повне ім'я
+        const fullName = registerFullNameInput.value.trim();
         const email = registerEmailInput.value.trim();
         const password = registerPasswordInput.value.trim();
         const confirmPassword = registerConfirmPasswordInput.value.trim();
@@ -157,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
         registerButton.disabled = true;
         registerButton.textContent = 'Реєстрація...';
 
-        if (fullName === '' || email === '' || password === '' || confirmPassword === '') { // ОНОВЛЕНО
+        if (fullName === '' || email === '' || password === '' || confirmPassword === '') {
             registerErrorMessage.textContent = 'Будь ласка, заповніть всі поля.';
             registerButton.disabled = false;
             registerButton.textContent = 'Зареєструватися';
@@ -188,10 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (error) {
                 console.error('Помилка реєстрації Supabase (Auth):', error.message);
                 registerErrorMessage.textContent = error.message || 'Помилка реєстрації.';
-                registerErrorMessage.style.color = '#d32f2f';
             } else if (data.user) {
-                console.log('Користувач зареєстрований в auth.users:', data.user);
-
                 // Крок 2: Увійти щойно зареєстрованим користувачем, щоб активувати сесію.
                 const { error: signInError } = await supabase.auth.signInWithPassword({
                     email: email,
@@ -200,8 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (signInError) {
                     console.error('Помилка входу після реєстрації:', signInError.message);
-                    registerErrorMessage.textContent = `Реєстрація успішна, але не вдалося автоматично увійти: ${signInError.message}`;
-                    registerErrorMessage.style.color = '#d32f2f';
+                    registerErrorMessage.textContent = `Реєстрація успішна, але не вдалося автоматично увійти.`;
                     registerButton.disabled = false;
                     registerButton.textContent = 'Зареєструватися';
                     return;
@@ -213,31 +205,26 @@ document.addEventListener('DOMContentLoaded', () => {
                     .insert({
                         user_id: data.user.id,
                         email: data.user.email,
-                        full_name: fullName // ОНОВЛЕНО: використовуємо fullName з поля форми
+                        full_name: fullName
                     });
 
                 if (insertError) {
                     console.error('Помилка додавання до profiles_admin:', insertError.message);
-                    registerErrorMessage.textContent = `Реєстрація успішна, але сталася помилка при наданні прав адміністратора: ${insertError.message}`;
-                    registerErrorMessage.style.color = '#d32f2f';
+                    registerErrorMessage.textContent = `Реєстрація успішна, але сталася помилка при наданні прав адміністратора.`;
                 } else {
-                    console.log('Користувача додано до profiles_admin.');
-                    registerErrorMessage.textContent = 'Реєстрація успішна! Тепер ви адміністратор і можете увійти.';
+                    registerErrorMessage.textContent = 'Реєстрація успішна! Перенаправлення...';
                     registerErrorMessage.style.color = '#4CAF50';
-                    registerForm.reset();
                     setTimeout(() => {
-                        window.location.href = '/admin-dashboard.html';
+                        window.location.href = 'admin-dashboard.html';
                     }, 500);
                 }
             } else {
                 registerErrorMessage.textContent = 'Невідома помилка під час реєстрації.';
-                registerErrorMessage.style.color = '#d32f2f';
             }
 
         } catch (err) {
             console.error('Невідома помилка під час реєстрації:', err);
             registerErrorMessage.textContent = 'Виникла невідома помилка. Спробуйте ще раз.';
-            registerErrorMessage.style.color = '#d32f2f';
         } finally {
             registerButton.disabled = false;
             registerButton.textContent = 'Зареєструватися';
