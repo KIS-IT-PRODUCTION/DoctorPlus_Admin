@@ -32,21 +32,27 @@
         }
         .table-container {
             overflow-x: auto;
+            margin-top: 15px;
         }
-        #faqTable, #reviewsTable, #userHelpTable {
+        /* ОНОВЛЕНО: Додано селектор #doctorConsultationsTable */
+        #faqTable, #reviewsTable, #userHelpTable, #doctorConsultationsTable {
             width: 100%;
             border-collapse: collapse;
         }
-        #faqTable th, #faqTable td, #reviewsTable th, #reviewsTable td, #userHelpTable th, #userHelpTable td {
+        #faqTable th, #faqTable td, 
+        #reviewsTable th, #reviewsTable td, 
+        #userHelpTable th, #userHelpTable td,
+        #doctorConsultationsTable th, #doctorConsultationsTable td {
             border: 1px solid #ddd;
             padding: 12px;
             text-align: left;
+            font-size: 0.9em;
         }
-        #faqTable th, #reviewsTable th, #userHelpTable th {
+        #faqTable th, #reviewsTable th, #userHelpTable th, #doctorConsultationsTable th {
             background-color: #f2f2f2;
             font-weight: bold;
         }
-        #faqTable tr:nth-child(even), #reviewsTable tr:nth-child(even), #userHelpTable tr:nth-child(even) {
+        #faqTable tr:nth-child(even), #reviewsTable tr:nth-child(even), #userHelpTable tr:nth-child(even), #doctorConsultationsTable tr:nth-child(even) {
             background-color: #f9f9f9;
         }
         #faqTable .actions button, #reviewsTable .actions button, #userHelpTable .actions button {
@@ -72,17 +78,24 @@
         }
         .secondary-button {
              background-color: #6c757d;
+             color: white;
+             border: none;
+             padding: 8px 12px;
+             border-radius: 4px;
+             cursor: pointer;
+        }
+        .secondary-button:hover {
+            background-color: #5a6268;
         }
         .resolved-row {
             background-color: #e9ecef !important;
             color: #6c757d;
         }
-        /* Додатковий стиль для кнопок експорту, якщо потрібно */
         .export-buttons-group {
             margin-bottom: 15px;
-            display: flex; /* Для вирівнювання кнопок в рядок */
-            gap: 10px;    /* Відступ між кнопками */
-            flex-wrap: wrap; /* Дозволяє кнопкам переноситися на наступний рядок */
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
         }
         .export-buttons-group button {
             padding: 10px 15px;
@@ -130,7 +143,7 @@
             flex: 1;
             display: flex;
             align-items: center;
-            cursor: pointer; /* Підкреслює, що це клікабельний елемент */
+            cursor: pointer; 
         }
         .doctor-item .doctor-order {
             font-size: 1.2em;
@@ -157,6 +170,50 @@
         .doctor-item .order-controls .order-btn:hover {
             background-color: #dee2e6;
         }
+        
+        /* Стилі для секції історії консультацій у модальному вікні */
+        .consultation-history-section {
+            margin-top: 25px;
+            border-top: 2px solid #e9ecef;
+            padding-top: 15px;
+        }
+        .consultation-history-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .consultation-filters {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            margin-bottom: 15px;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 6px;
+        }
+        .consultation-filters .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .consultation-filters label {
+            font-size: 0.85em;
+            margin-bottom: 4px;
+            color: #666;
+        }
+        .consultation-filters input[type="date"] {
+            padding: 6px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        /* Статуси консультацій */
+        .status-badge {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        .status-completed { background-color: #d4edda; color: #155724; }
+        .status-pending { background-color: #fff3cd; color: #856404; }
+        .status-cancelled { background-color: #f8d7da; color: #721c24; }
     </style>
 </head>
 <body>
@@ -214,7 +271,7 @@
                     <label for="notificationTarget">Отримувачі:</label>
                     <select id="notificationTarget" required>
                         <option value="all_doctors">Лише Лікарям</option>
-                        <option value="all_patients">Лише Пацієнтам</option>
+                        <option value="all_patients">Лише Пацієнти</option>
                         <option value="specific_doctor">Конкретному Лікарю (за ID)</option>
                         <option value="specific_patient">Конкретному Пацієнту (за ID)</option>
                     </select>
@@ -418,7 +475,40 @@
                 <p><strong>Диплом:</strong> <a id="detailDiploma" href="#" target="_blank">Переглянути</a></p>
                 <p><strong>Перевірений:</strong> <span id="displayDoctorCheck"></span></p>
                 <p id="doctorProfileStatus" class="message"></p>
-            </div>
+
+                <div class="consultation-history-section">
+                    <h3>Історія Консультацій</h3>
+                    
+                    <div class="consultation-filters">
+                        <div class="filter-group">
+                            <label for="consultationDateFrom">З дати:</label>
+                            <input type="date" id="consultationDateFrom">
+                        </div>
+                        <div class="filter-group">
+                            <label for="consultationDateTo">По дату:</label>
+                            <input type="date" id="consultationDateTo">
+                        </div>
+                        <button id="filterConsultationsBtn" type="button" class="secondary-button">Фільтрувати</button>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="doctorConsultationsTable">
+                            <thead>
+                                <tr>
+                                    <th>Дата/Час</th>
+                                    <th>Пацієнт</th>
+                                    <th>Статус</th>
+                                    <th>Сума ($)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="doctorConsultationsList">
+                                <tr><td colspan="4" style="text-align:center;">Завантаження або дані відсутні...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                </div>
+            
             <div class="modal-actions">
                 <button id="approveDoctorButton" style="display:none;">Схвалити</button>
                 <button id="rejectDoctorButton" style="display:none;">Відхилити</button>
