@@ -1,94 +1,99 @@
 // js/modules/export.js
 import { supabase } from '../supabase-client.js';
+import { formatUSD } from './utils.js';
 
-export const initExportLogic = () => {
-    const exportCsvBtn = document.getElementById('exportSelectedCsv');
-    const exportPdfBtn = document.getElementById('exportSelectedPdf');
-    const exportDataTypeSelect = document.getElementById('exportDataType');
-    const exportStatus = document.getElementById('exportStatus');
+const getUserExportData = async (type) => {
+    let patients = [], doctors = [];
 
-    if (!exportCsvBtn || !exportPdfBtn) return;
-
-    exportCsvBtn.addEventListener('click', () => handleExport('csv', exportDataTypeSelect.value, exportStatus));
-    exportPdfBtn.addEventListener('click', () => handleExport('pdf', exportDataTypeSelect.value, exportStatus));
-};
-
-const handleExport = async (format, type, statusEl) => {
-    if (statusEl) statusEl.textContent = `Експорт ${format.toUpperCase()}... Зачекайте.`;
-
-    let data = [];
-    try {
-        if (type === 'patients') {
-            const { data: res, error } = await supabase.from('profiles').select('*');
-            if (error) throw error;
-            data = res;
-        } else if (type === 'doctors') {
-            const { data: res, error } = await supabase.from('anketa_doctor').select('*');
-            if (error) throw error;
-            data = res;
-        } else if (type === 'all_users') {
-            // Збираємо і пацієнтів, і лікарів
-            const { data: pRes } = await supabase.from('profiles').select('user_id, email, full_name, created_at');
-            const { data: dRes } = await supabase.from('anketa_doctor').select('user_id, email, full_name, created_at');
-            
-            const formattedPatients = (pRes || []).map(p => ({ ...p, role: 'Patient' }));
-            const formattedDoctors = (dRes || []).map(d => ({ ...d, role: 'Doctor' }));
-            data = [...formattedPatients, ...formattedDoctors];
-        }
-
-        if (!data || data.length === 0) {
-            if (statusEl) statusEl.textContent = 'Немає даних для експорту.';
-            return;
-        }
-
-        if (format === 'csv') {
-            generateCSV(data, type);
-            if (statusEl) statusEl.textContent = 'CSV файл успішно завантажено!';
-        } else if (format === 'pdf') {
-            generatePDF(data, type);
-            if (statusEl) statusEl.textContent = 'PDF файл успішно завантажено!';
-        }
-    } catch (error) {
-        console.error("Помилка експорту:", error);
-        if (statusEl) statusEl.textContent = `Помилка: ${error.message}`;
+    if (type === 'all_users' || type === 'patients') {
+        const { data } = await supabase
+            .from('profiles').select('full_name, email, created_at');
+        patients = (data || []).map(r => ({ ...r, role: 'Пацієнт' }));
     }
-};
-
-const generateCSV = (data, type) => {
-    const keys = Object.keys(data[0]);
-    const header = keys.join(',');
-    const rows = data.map(row => keys.map(k => `"${String(row[k] || '').replace(/"/g, '""')}"`).join(','));
-    const csvContent = '\uFEFF' + [header, ...rows].join('\n'); // \uFEFF для коректного відображення кирилиці в Excel
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `export_${type}_${new Date().toISOString().slice(0,10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-};
-
-const generatePDF = (data, type) => {
-    if (!window.jspdf) {
-        alert('Бібліотека PDF не знайдена. Перевірте підключення jsPDF у HTML.');
-        return;
+    if (type === 'all_users' || type === 'doctors') {
+        const { data } = await supabase
+            .from('anketa_doctor').select('full_name, email, created_at');
+        doctors = (data || []).map(r => ({ ...r, role: 'Лікар' }));
     }
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('l'); // Альбомна орієнтація
+    return [...patients, ...doctors];
+};
 
-    // Для PDF беремо лише перші 6 колонок, щоб таблиця не вилізла за краї
-    const maxCols = 6;
-    const keys = Object.keys(data[0]).slice(0, maxCols);
-    const body = data.map(row => keys.map(k => String(row[k] || '').substring(0, 40)));
+export const initExport = () => {
+    const typeSelect  = document.getElementById('exportDataType');
+    const csvBtn      = document.getElementById('exportSelectedCsv');
+    const pdfBtn      = document.getElementById('exportSelectedPdf');
+    const statusEl    = document.getElementById('exportStatus');
 
-    doc.text(`Експорт даних: ${type} (${new Date().toLocaleDateString()})`, 14, 15);
-    doc.autoTable({
-        head: [keys],
-        body: body,
-        startY: 20,
-        styles: { fontSize: 8 },
-        headStyles: { fillColor: [0, 123, 255] }
+    csvBtn?.addEventListener('click', async () => {
+        if (statusEl) statusEl.textContent = 'Формування CSV...';
+        const rows = await getUserExportData(typeSelect?.value || 'all_users');
+        if (!rows.length) { if (statusEl) statusEl.textContent = 'Немає даних.'; return; }
+
+        const header = "Повне ім'я,Email,Роль,Дата реєстрації";
+        const csv = [header, ...rows.map(r =>
+            `"${r.full_name || ''}","${r.email || ''}","${r.role}","${new Date(r.created_at).toLocaleDateString('uk-UA')}"`
+        )].join('\n');
+
+        const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `users-export-${new Date().toISOString().slice(0,10)}.csv`;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        if (statusEl) statusEl.textContent = 'CSV завантажено!';
     });
-    doc.save(`export_${type}_${new Date().toISOString().slice(0,10)}.pdf`);
+
+    pdfBtn?.addEventListener('click', async () => {
+        if (statusEl) statusEl.textContent = 'Формування PDF...';
+        pdfBtn.disabled = true;
+        try {
+            const rows = await getUserExportData(typeSelect?.value || 'all_users');
+            if (!rows.length) { if (statusEl) statusEl.textContent = 'Немає даних.'; return; }
+
+            const printDiv = document.createElement('div');
+            printDiv.style.cssText =
+                'position:fixed;top:-9999px;left:-9999px;width:900px;background:#fff;padding:30px;font-family:Arial,sans-serif;font-size:13px;color:#000;';
+            printDiv.innerHTML = `
+                <h2 style="margin:0 0 6px;font-size:17px;color:#2c3e50;">Експорт Користувачів</h2>
+                <p style="margin:0 0 14px;color:#666;font-size:11px;">
+                    Дата: ${new Date().toLocaleDateString('uk-UA')}
+                </p>
+                <table style="width:100%;border-collapse:collapse;">
+                    <thead>
+                        <tr>${["Повне ім'я","Email","Роль","Дата реєстрації"].map(h =>
+                            `<th style="background:#2980b9;color:#fff;padding:9px 7px;text-align:left;font-size:11px;border:1px solid #1a5276;">${h}</th>`
+                        ).join('')}</tr>
+                    </thead>
+                    <tbody>
+                        ${rows.map((r, i) => `
+                            <tr style="background:${i % 2 === 0 ? '#fff' : '#eef5fc'};">
+                                <td style="padding:7px;border:1px solid #dee2e6;font-size:11px;">${r.full_name || '—'}</td>
+                                <td style="padding:7px;border:1px solid #dee2e6;font-size:11px;">${r.email || '—'}</td>
+                                <td style="padding:7px;border:1px solid #dee2e6;font-size:11px;">${r.role}</td>
+                                <td style="padding:7px;border:1px solid #dee2e6;font-size:11px;">${new Date(r.created_at).toLocaleDateString('uk-UA')}</td>
+                            </tr>`
+                        ).join('')}
+                    </tbody>
+                </table>`;
+
+            document.body.appendChild(printDiv);
+            const canvas = await html2canvas(printDiv, { scale: 2, backgroundColor: '#ffffff' });
+            document.body.removeChild(printDiv);
+
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+            const imgW = pdf.internal.pageSize.getWidth() - 20;
+            const imgH = (canvas.height * imgW) / canvas.width;
+            pdf.addImage(
+                canvas.toDataURL('image/png'), 'PNG', 10, 10, imgW,
+                Math.min(imgH, pdf.internal.pageSize.getHeight() - 20)
+            );
+            pdf.save(`users-export-${new Date().toISOString().slice(0,10)}.pdf`);
+            if (statusEl) statusEl.textContent = 'PDF завантажено!';
+        } catch (err) {
+            console.error('Users PDF export:', err);
+            if (statusEl) statusEl.textContent = `Помилка: ${err.message}`;
+        } finally {
+            pdfBtn.disabled = false;
+        }
+    });
 };

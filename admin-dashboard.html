@@ -17,138 +17,86 @@
     
     <style>
         /* --- БАЗОВІ СТИЛІ --- */
-        .faq-management, .reviews-management { display: flex; flex-direction: column; gap: 2rem; }
-        #faqForm, #reviewForm { border: 1px solid #ccc; padding: 20px; border-radius: 8px; background-color: #f9f9f9; }
-        #faqForm h3, #reviewForm h3 { margin-top: 0; border-bottom: 2px solid #007bff; padding-bottom: 10px; }
-        .table-container { overflow-x: auto; margin-top: 15px; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; font-size: 0.9em; }
-        th { background-color: #f2f2f2; font-weight: bold; }
-        tr:nth-child(even) { background-color: #f9f9f9; }
-        .actions button { margin-right: 5px; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; color: white; }
-        .edit-btn { background-color: #ffc107; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
-        .delete-btn { background-color: #dc3545; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; color: white; }
-        .toggle-resolved-btn { background-color: #007bff; }
-        .toggle-resolved-btn.resolved { background-color: #28a745; }
-        .secondary-button { background-color: #6c757d; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; }
-        .secondary-button:hover { background-color: #5a6268; }
-        .resolved-row { background-color: #e9ecef !important; color: #6c757d; }
-        .export-buttons-group { margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
-        .export-buttons-group button { padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 0.9em; }
-        .export-buttons-group button:hover { background-color: #0056b3; }
-        .message { font-size: 0.9em; margin-top: 8px; min-height: 1.2em; }
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; margin-bottom: 5px; font-weight: 500; color: #495057; }
+        .faq-management, .reviews-management { display:flex; flex-direction:column; gap:2rem; }
+        #faqForm, #reviewForm { border:1px solid #ccc; padding:20px; border-radius:8px; background:#f9f9f9; }
+        #faqForm h3, #reviewForm h3 { margin-top:0; border-bottom:2px solid #007bff; padding-bottom:10px; }
+        .table-container { overflow-x:auto; margin-top:15px; }
+        table { width:100%; border-collapse:collapse; }
+        th, td { border:1px solid #ddd; padding:12px; text-align:left; font-size:.9em; }
+        th { background:#f2f2f2; font-weight:bold; }
+        tr:nth-child(even) { background:#f9f9f9; }
+        .edit-btn  { background:#ffc107; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; }
+        .delete-btn{ background:#dc3545; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; color:white; }
+        .toggle-resolved-btn { background:#007bff; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; }
+        .toggle-resolved-btn.resolved { background:#28a745; }
+        .secondary-button { background:#6c757d; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; }
+        .secondary-button:hover { background:#5a6268; }
+        .resolved-row { background:#e9ecef !important; color:#6c757d; }
+        .export-buttons-group { margin-bottom:15px; display:flex; gap:10px; flex-wrap:wrap; }
+        .export-buttons-group button { padding:10px 15px; background:#007bff; color:white; border:none; border-radius:5px; cursor:pointer; font-size:.9em; }
+        .export-buttons-group button:hover { background:#0056b3; }
+        .message { font-size:.9em; margin-top:8px; min-height:1.2em; }
+        .input-group { margin-bottom:15px; }
+        .input-group label { display:block; margin-bottom:5px; font-weight:500; color:#495057; }
         .input-group input, .input-group textarea, .input-group select {
-            width: 100%; padding: 8px 10px; border: 1px solid #ced4da;
-            border-radius: 4px; font-size: 0.95em; box-sizing: border-box;
+            width:100%; padding:8px 10px; border:1px solid #ced4da;
+            border-radius:4px; font-size:.95em; box-sizing:border-box;
         }
 
         /* --- ЛІКАРІ --- */
-        #doctorsSection h2 { margin-bottom: 15px; }
-        #doctorsSection .controls { margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
-        #doctorsSection .controls select { padding: 8px; border-radius: 5px; }
-        #doctorsList { list-style: none; padding: 0; width: 100%; }
-        .doctor-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 10px; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .doctor-item .doctor-info { flex: 1; display: flex; align-items: center; cursor: pointer; }
-        .doctor-item .order-controls { display: flex; gap: 5px; }
-        .doctor-item .order-controls .order-btn { background-color: #e9ecef; border: 1px solid #ced4da; color: #495057; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 5px; cursor: pointer; }
-        .doctor-item .order-controls .order-btn:hover { background-color: #dee2e6; }
-        .order-badge { font-weight: bold; color: #007bff; margin-right: 10px; }
+        #doctorsList { list-style:none; padding:0; width:100%; }
+        .doctor-item { display:flex; justify-content:space-between; align-items:center; padding:15px; border:1px solid #ddd; border-radius:8px; margin-bottom:10px; background:#fff; box-shadow:0 2px 4px rgba(0,0,0,.05); }
+        .doctor-item .doctor-info { flex:1; display:flex; align-items:center; cursor:pointer; }
+        .doctor-item .order-controls { display:flex; gap:5px; }
+        .order-btn { background:#e9ecef; border:1px solid #ced4da; color:#495057; width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:5px; cursor:pointer; font-size:.8em; }
+        .order-btn:hover { background:#dee2e6; }
+        .order-badge { font-weight:bold; color:#007bff; margin-right:10px; }
 
         /* --- КОНСУЛЬТАЦІЇ --- */
-        .consultation-history-section { margin-top: 25px; border-top: 2px solid #e9ecef; padding-top: 15px; }
-        .consultation-filters { display: flex; gap: 15px; align-items: flex-end; margin-bottom: 15px; background: #f8f9fa; padding: 10px; border-radius: 6px; flex-wrap: wrap; }
-        .consultation-filters .filter-group { display: flex; flex-direction: column; }
-        .consultation-filters label { font-size: 0.85em; margin-bottom: 4px; color: #666; }
-        .consultation-filters input[type="date"] { padding: 6px; border: 1px solid #ced4da; border-radius: 4px; }
-        .status-badge { padding: 3px 8px; border-radius: 12px; font-size: 0.8em; font-weight: bold; }
-        .status-completed { background-color: #d4edda; color: #155724; }
-        .status-pending { background-color: #fff3cd; color: #856404; }
-        .status-cancelled { background-color: #f8d7da; color: #721c24; }
+        .consultation-history-section { margin-top:25px; border-top:2px solid #e9ecef; padding-top:15px; }
+        .consultation-filters { display:flex; gap:15px; align-items:flex-end; margin-bottom:15px; background:#f8f9fa; padding:10px; border-radius:6px; flex-wrap:wrap; }
+        .consultation-filters .filter-group { display:flex; flex-direction:column; }
+        .consultation-filters label { font-size:.85em; margin-bottom:4px; color:#666; }
+        .consultation-filters input[type="date"] { padding:6px; border:1px solid #ced4da; border-radius:4px; }
+        .status-badge { padding:3px 8px; border-radius:12px; font-size:.8em; font-weight:bold; }
+        .status-completed { background:#d4edda; color:#155724; }
+        .status-pending   { background:#fff3cd; color:#856404; }
+        .status-cancelled { background:#f8d7da; color:#721c24; }
 
         /* --- МАКЕТ --- */
-        body { margin: 0; padding: 0; background-color: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        
-        .top-bar {
-            background: #ffffff; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: fixed; top: 0; left: 0;
-            width: 100%; z-index: 1000; box-sizing: border-box; height: 70px;
-        }
-        .top-bar__left { display: flex; align-items: center; gap: 15px; }
-        .top-bar__right { display: flex; align-items: center; gap: 15px; }
-        .admin-logo { height: 40px; width: 40px; border-radius: 50%; border: 2px solid #5d9cec; padding: 3px; }
-        .welcome-message { font-size: 1.2em; font-weight: 500; }
-        #adminName { color: #5d9cec; }
-        .logout-button { background-color: #e74c3c; color: white; padding: 8px 16px; border: none; border-radius: 20px; cursor: pointer; font-weight: bold; }
-        .logout-button:hover { background-color: #c0392b; }
+        body { margin:0; padding:0; background:#f0f2f5; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; }
+        .top-bar { background:#fff; padding:15px 25px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 10px rgba(0,0,0,.1); position:fixed; top:0; left:0; width:100%; z-index:1000; box-sizing:border-box; height:70px; }
+        .top-bar__left { display:flex; align-items:center; gap:15px; }
+        .top-bar__right { display:flex; align-items:center; gap:15px; }
+        .admin-logo { height:40px; width:40px; border-radius:50%; border:2px solid #5d9cec; padding:3px; }
+        .welcome-message { font-size:1.2em; font-weight:500; }
+        #adminName { color:#5d9cec; }
+        .logout-button { background:#e74c3c; color:white; padding:8px 16px; border:none; border-radius:20px; cursor:pointer; font-weight:bold; }
+        .logout-button:hover { background:#c0392b; }
+        .layout-wrapper { display:flex; margin-top:70px; min-height:calc(100vh - 70px); }
+        .sidebar { width:260px; background:#fff; box-shadow:2px 0 10px rgba(0,0,0,.05); position:fixed; height:calc(100vh - 70px); overflow-y:auto; left:0; top:70px; }
+        .dashboard-nav { display:flex; flex-direction:column; padding:20px 0; gap:5px; }
+        .dashboard-nav button { background:transparent; color:#495057; padding:15px 25px; border:none; cursor:pointer; font-size:1.05em; font-weight:500; text-align:left; display:flex; align-items:center; gap:15px; border-left:4px solid transparent; transition:all .2s ease; width:100%; }
+        .dashboard-nav button i { width:20px; text-align:center; color:#8c98a4; }
+        .dashboard-nav button:hover { background:#f8f9fa; color:#5d9cec; }
+        .dashboard-nav button:hover i { color:#5d9cec; }
+        .dashboard-nav button.active { background:#f0f7ff; color:#5d9cec; border-left:4px solid #5d9cec; }
+        .dashboard-nav button.active i { color:#5d9cec; }
+        .notification-count { background:#e74c3c; color:white; border-radius:50%; padding:2px 6px; font-size:.75em; font-weight:bold; margin-left:auto; }
+        .dashboard-container { margin-left:260px; padding:30px 40px; width:calc(100% - 260px); box-sizing:border-box; background:#f4f6f9; }
+        h1 { color:#2c3e50; margin-bottom:30px; font-size:2.5em; border-bottom:3px solid #5d9cec; padding-bottom:10px; display:inline-block; }
+        h2 { color:#34495e; margin-top:0; margin-bottom:20px; font-size:1.8em; border-left:5px solid #5d9cec; padding-left:12px; }
+        .dashboard-section { background:#fff; padding:25px; border-radius:10px; margin-bottom:25px; box-shadow:0 4px 15px rgba(0,0,0,.05); border:1px solid #e0e6ed; }
 
-        .layout-wrapper { display: flex; margin-top: 70px; min-height: calc(100vh - 70px); }
-
-        .sidebar {
-            width: 260px; background-color: #ffffff; box-shadow: 2px 0 10px rgba(0,0,0,0.05);
-            position: fixed; height: calc(100vh - 70px); overflow-y: auto; left: 0; top: 70px;
-        }
-        .dashboard-nav { display: flex; flex-direction: column; padding: 20px 0; gap: 5px; }
-        .dashboard-nav button {
-            background-color: transparent; color: #495057; padding: 15px 25px; border: none; cursor: pointer;
-            font-size: 1.05em; font-weight: 500; text-align: left; display: flex; align-items: center; gap: 15px;
-            border-left: 4px solid transparent; transition: all 0.2s ease; width: 100%;
-        }
-        .dashboard-nav button i { width: 20px; text-align: center; color: #8c98a4; }
-        .dashboard-nav button:hover { background-color: #f8f9fa; color: #5d9cec; }
-        .dashboard-nav button:hover i { color: #5d9cec; }
-        .dashboard-nav button.active { background-color: #f0f7ff; color: #5d9cec; border-left: 4px solid #5d9cec; }
-        .dashboard-nav button.active i { color: #5d9cec; }
-        .notification-count {
-            background-color: #e74c3c; color: white; border-radius: 50%;
-            padding: 2px 6px; font-size: 0.75em; font-weight: bold; margin-left: auto;
-        }
-
-        .dashboard-container {
-            margin-left: 260px; padding: 30px 40px;
-            width: calc(100% - 260px); box-sizing: border-box; background-color: #f4f6f9;
-        }
-        h1 { color: #2c3e50; margin-bottom: 30px; font-size: 2.5em; border-bottom: 3px solid #5d9cec; padding-bottom: 10px; display: inline-block; }
-        h2 { color: #34495e; margin-top: 0; margin-bottom: 20px; font-size: 1.8em; border-left: 5px solid #5d9cec; padding-left: 12px; }
-        .dashboard-section {
-            background-color: #ffffff; padding: 25px; border-radius: 10px;
-            margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e0e6ed;
-        }
-
-        /* --- МОДАЛЬНІ ВІКНА --- */
-        .modal {
-            display: none; /* ЗАВЖДИ приховане за замовчуванням */
-            position: fixed; z-index: 9999;
-            left: 0; top: 0; width: 100%; height: 100%;
-            overflow-y: auto; background-color: rgba(0,0,0,0.55);
-        }
-        .modal-content {
-            background-color: #fff; margin: 40px auto; padding: 30px;
-            border-radius: 10px; max-width: 800px; width: 90%;
-            position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-        }
-        .close-button {
-            position: absolute; top: 15px; right: 20px;
-            font-size: 1.8em; font-weight: bold; color: #aaa; cursor: pointer; line-height: 1;
-        }
-        .close-button:hover { color: #333; }
+        /* --- МОДАЛКИ --- */
+        .modal { display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; overflow-y:auto; background:rgba(0,0,0,.55); }
+        .modal-content { background:#fff; margin:40px auto; padding:30px; border-radius:10px; max-width:800px; width:90%; position:relative; box-shadow:0 10px 40px rgba(0,0,0,.2); }
+        .close-button { position:absolute; top:15px; right:20px; font-size:1.8em; font-weight:bold; color:#aaa; cursor:pointer; line-height:1; }
+        .close-button:hover { color:#333; }
 
         /* --- СПЕЦІАЛЬНОСТІ --- */
-        #specializationForm {
-            border: 1px solid #ccc; padding: 20px; border-radius: 8px; background: #f9f9f9;
-        }
-        #specializationFormTitle {
-            margin-top: 0; border-bottom: 2px solid #007bff; padding-bottom: 10px; color: #007bff;
-        }
-        .spec-checkbox-item {
-            display: flex; align-items: center; gap: 6px;
-            padding: 4px 0; min-width: 180px; cursor: pointer; font-size: 0.95em;
-        }
-        .spec-checkbox-item input[type="checkbox"] {
-            width: 16px; height: 16px; cursor: pointer; accent-color: #007bff;
-        }
-        .spec-checkbox-item:hover { color: #007bff; }
+        #specializationForm { border:1px solid #ccc; padding:20px; border-radius:8px; background:#f9f9f9; }
+        #specializationFormTitle { margin-top:0; border-bottom:2px solid #007bff; padding-bottom:10px; color:#007bff; }
     </style>
 </head>
 <body>
@@ -180,7 +128,6 @@
                 <button id="showReviews"><i class="fas fa-star"></i> Керування Відгуками</button>
                 <button id="showUserHelp"><i class="fas fa-life-ring"></i> Звернення</button>
                 <button id="showMainScreenSettings"><i class="fas fa-home"></i> Налаштування Головного</button>
-                <!-- ↓ НОВА КНОПКА ↓ -->
                 <button id="showSpecializations"><i class="fas fa-stethoscope"></i> Спеціальності</button>
                 <button id="showExportData"><i class="fas fa-download"></i> Експорт Даних</button>
             </nav>
@@ -199,9 +146,9 @@
             <!-- ЛІКАРІ -->
             <div id="doctorsSection" class="dashboard-section" style="display:none;">
                 <h2>Список Усіх Лікарів</h2>
-                <div class="controls">
+                <div style="margin-bottom:20px;display:flex;align-items:center;gap:10px;">
                     <label for="specializationFilter">Фільтр за спеціалізацією:</label>
-                    <select id="specializationFilter">
+                    <select id="specializationFilter" style="padding:8px;border-radius:5px;border:1px solid #ced4da;">
                         <option value="">Всі спеціалізації</option>
                     </select>
                 </div>
@@ -229,10 +176,10 @@
                     <button id="filterGlobalConsultationsBtn" class="secondary-button">
                         <i class="fas fa-filter"></i> Фільтрувати
                     </button>
-                    <button id="exportConsultationsPdf" style="margin-left:auto; background:#dc3545; color:white; padding:8px 15px; border:none; border-radius:5px; cursor:pointer;">
+                    <button id="exportConsultationsPdf" style="margin-left:auto;background:#dc3545;color:white;padding:8px 15px;border:none;border-radius:5px;cursor:pointer;">
                         <i class="fas fa-file-pdf"></i> PDF
                     </button>
-                    <button id="exportConsultationsDoc" style="background:#28a745; color:white; padding:8px 15px; border:none; border-radius:5px; cursor:pointer;">
+                    <button id="exportConsultationsDoc" style="background:#28a745;color:white;padding:8px 15px;border:none;border-radius:5px;cursor:pointer;">
                         <i class="fas fa-file-word"></i> DOC
                     </button>
                 </div>
@@ -244,7 +191,7 @@
                                 <th>Лікар</th>
                                 <th>Пацієнт</th>
                                 <th>Статус</th>
-                                <th>Сума</th>
+                                <th>Сума (USD)</th>
                             </tr>
                         </thead>
                         <tbody id="allConsultationsList">
@@ -279,10 +226,6 @@
                         <label for="notificationMessage">Повідомлення:</label>
                         <textarea id="notificationMessage" rows="5" required></textarea>
                     </div>
-                    <div class="input-group">
-                        <label for="extraData">Додаткові дані (JSON, необов'язково):</label>
-                        <textarea id="extraData" rows="3" placeholder='{"key": "value"}'></textarea>
-                    </div>
                     <button type="submit" class="secondary-button">Відправити</button>
                     <p id="notificationStatus" class="message"></p>
                 </form>
@@ -311,7 +254,7 @@
                             <label for="faqAnswerEn">Відповідь (EN):</label>
                             <textarea id="faqAnswerEn" rows="4" required></textarea>
                         </div>
-                        <div style="display:flex; gap:10px;">
+                        <div style="display:flex;gap:10px;">
                             <button type="submit" class="secondary-button" style="background:#007bff;">Зберегти FAQ</button>
                             <button type="button" id="clearFaqForm" class="secondary-button">Очистити форму</button>
                         </div>
@@ -321,7 +264,11 @@
                         <div class="table-container">
                             <table>
                                 <thead>
-                                    <tr><th>ID</th><th>Питання (UK)</th><th>Дії</th></tr>
+                                    <tr>
+                                        <th style="width:60px;text-align:center;">Порядок</th>
+                                        <th>Питання (UK)</th>
+                                        <th style="width:180px;">Дії</th>
+                                    </tr>
                                 </thead>
                                 <tbody id="faqList"></tbody>
                             </table>
@@ -334,28 +281,8 @@
             <div id="reviewsSection" class="dashboard-section" style="display:none;">
                 <h2>Керування Відгуками</h2>
                 <div class="reviews-management">
-                    <form id="reviewForm">
-                        <input type="hidden" id="reviewId">
-                        <h3>Додати / Редагувати Відгук</h3>
-                        <div class="input-group">
-                            <label for="reviewUserName">Ім'я користувача:</label>
-                            <input type="text" id="reviewUserName" required>
-                        </div>
-                        <div class="input-group">
-                            <label for="reviewRating">Рейтинг (1-5):</label>
-                            <input type="number" id="reviewRating" min="1" max="5" required>
-                        </div>
-                        <div class="input-group">
-                            <label for="reviewDescription">Текст відгуку:</label>
-                            <textarea id="reviewDescription" rows="4" required></textarea>
-                        </div>
-                        <div style="display:flex; gap:10px;">
-                            <button type="submit" class="secondary-button" style="background:#007bff;">Зберегти Відгук</button>
-                            <button type="button" id="clearReviewForm" class="secondary-button">Очистити форму</button>
-                        </div>
-                    </form>
                     <div>
-                        <h3>Існуючі Відгуки</h3>
+                        <h3>Список відгуків</h3>
                         <div class="table-container">
                             <table>
                                 <thead>
@@ -397,37 +324,33 @@
                     <div class="input-group">
                         <label for="newMainScreenImage">Завантажити нове зображення:</label>
                         <input type="file" id="newMainScreenImage" accept="image/*">
-                        <p class="message" style="font-size:0.85em;">Підтримуються формати: JPG, PNG, SVG. Макс. розмір: 5MB.</p>
                     </div>
                     <button type="submit" class="secondary-button" style="background:#007bff;">Оновити Зображення</button>
                     <p id="mainScreenImageStatus" class="message"></p>
                 </form>
-                <form id="introMottoTextForm" style="margin-top:30px; border-top:1px solid #ccc; padding-top:20px;">
-                    <h3>Текст-мото на головному екрані пацієнта</h3>
+                <form id="introMottoTextForm" style="margin-top:30px;border-top:1px solid #ccc;padding-top:20px;">
+                    <h3>Текст-мото на головному екрані</h3>
                     <div class="input-group">
-                        <label for="currentIntroMottoTextUk">Поточний текст (УК):</label>
-                        <textarea id="currentIntroMottoTextUk" rows="3" placeholder="Текст-мото українською"></textarea>
+                        <label for="currentIntroMottoTextUk">Текст (УК):</label>
+                        <textarea id="currentIntroMottoTextUk" rows="3"></textarea>
                     </div>
                     <div class="input-group">
-                        <label for="currentIntroMottoTextEn">Поточний текст (EN):</label>
-                        <textarea id="currentIntroMottoTextEn" rows="3" placeholder="Intro motto text in English"></textarea>
+                        <label for="currentIntroMottoTextEn">Текст (EN):</label>
+                        <textarea id="currentIntroMottoTextEn" rows="3"></textarea>
                     </div>
                     <button type="submit" class="secondary-button" style="background:#007bff;">Оновити Текст-мото</button>
                     <p id="introMottoTextStatus" class="message"></p>
                 </form>
             </div>
 
-            <!-- ↓↓↓ НОВА СЕКЦІЯ: СПЕЦІАЛЬНОСТІ ↓↓↓ -->
+            <!-- СПЕЦІАЛЬНОСТІ -->
             <div id="specializationsSection" class="dashboard-section" style="display:none;">
                 <h2>Керування Спеціальностями</h2>
                 <div class="faq-management">
-
-                    <!-- Форма додавання / редагування -->
                     <form id="specializationForm">
                         <input type="hidden" id="specializationId">
                         <h3 id="specializationFormTitle">Додати нову спеціальність</h3>
-
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:15px;">
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px;">
                             <div class="input-group" style="margin-bottom:0;">
                                 <label for="specializationNameUk">Назва (УК) <span style="color:red">*</span></label>
                                 <input type="text" id="specializationNameUk" placeholder="Наприклад: Кардіологія" required>
@@ -437,13 +360,11 @@
                                 <input type="text" id="specializationNameEn" placeholder="For example: Cardiology" required>
                             </div>
                         </div>
-
                         <div class="input-group">
                             <label for="specializationIcon">Іконка — emoji (необов'язково)</label>
                             <input type="text" id="specializationIcon" placeholder="Наприклад: ❤️" style="max-width:160px;">
                         </div>
-
-                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <div style="display:flex;gap:10px;flex-wrap:wrap;">
                             <button type="submit" class="secondary-button" style="background:#007bff;">
                                 <i class="fas fa-save"></i> Зберегти
                             </button>
@@ -454,31 +375,29 @@
                         <p id="specializationStatus" class="message"></p>
                     </form>
 
-                    <!-- Таблиця спеціальностей -->
                     <div>
                         <h3>Список спеціальностей</h3>
                         <div class="table-container">
                             <table>
                                 <thead>
                                     <tr>
-                                        <th style="width:50px;">Іконка</th>
+                                        <th style="width:60px;text-align:center;">Порядок</th>
+                                        <th style="width:50px;text-align:center;">Іконка</th>
                                         <th>Назва (УК)</th>
                                         <th>Назва (EN)</th>
-                                        <th style="width:80px; text-align:center;">Лікарів</th>
-                                        <th style="width:110px; text-align:center;">Статус</th>
-                                        <th style="width:210px;">Дії</th>
+                                        <th style="width:80px;text-align:center;">Лікарів</th>
+                                        <th style="width:110px;text-align:center;">Статус</th>
+                                        <th style="width:230px;">Дії</th>
                                     </tr>
                                 </thead>
                                 <tbody id="specializationsList">
-                                    <tr><td colspan="6" style="text-align:center;">Завантаження...</td></tr>
+                                    <tr><td colspan="7" style="text-align:center;">Завантаження...</td></tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
-
                 </div>
             </div>
-            <!-- ↑↑↑ КІНЕЦЬ СЕКЦІЇ СПЕЦІАЛЬНОСТІ ↑↑↑ -->
 
             <!-- ЕКСПОРТ ДАНИХ -->
             <div id="exportDataSection" class="dashboard-section" style="display:none;">
@@ -508,46 +427,37 @@
             <h2>Деталі Лікаря</h2>
             <div id="doctorDetailsContent">
                 <img id="doctorAvatar" src="" alt="Аватар лікаря"
-                    style="width:100px; height:100px; border-radius:50%; object-fit:cover; margin-bottom:10px;">
+                    style="width:100px;height:100px;border-radius:50%;object-fit:cover;margin-bottom:10px;">
 
                 <p><strong>Повне ім'я:</strong> <input type="text" id="inputFullName" style="width:100%;"></p>
-                <p><strong>Email:</strong> <input type="email" id="inputEmail" style="width:100%;"></p>
-                <p><strong>Телефон:</strong> <input type="tel" id="inputPhone" style="width:100%;"></p>
-                <p><strong>Країна:</strong> <input type="text" id="inputCountry" style="width:100%;"></p>
-                <p><strong>Мови:</strong> <textarea id="inputLanguages" style="width:100%;"></textarea></p>
+                <p><strong>Email:</strong>       <input type="email" id="inputEmail" style="width:100%;"></p>
+                <p><strong>Телефон:</strong>     <input type="tel"   id="inputPhone" style="width:100%;"></p>
+                <p><strong>Країна:</strong>      <input type="text"  id="inputCountry" style="width:100%;"></p>
+                <p><strong>Мови:</strong>        <textarea id="inputLanguages" style="width:100%;"></textarea></p>
 
-                <!-- ↓↓↓ ЗАМІНЕНО: textarea → чекбокси спеціальностей ↓↓↓ -->
                 <p>
                     <strong>Спеціалізація:</strong>
-                    <span style="font-size:0.82em; color:#888; display:block; margin-bottom:5px;">
-                        Оберіть одну або кілька
-                    </span>
-                    <div id="specializationCheckboxList" style="
-                        max-height:180px; overflow-y:auto;
-                        border:1px solid #ced4da; border-radius:6px;
-                        padding:8px 12px; background:#fff;
-                        display:flex; flex-wrap:wrap; gap:4px 16px;
-                    ">
-                        <span style="color:#aaa; font-size:0.9em;">Завантаження...</span>
+                    <span style="font-size:.82em;color:#888;display:block;margin-bottom:5px;">Оберіть одну або кілька</span>
+                    <div id="specializationCheckboxList" style="max-height:180px;overflow-y:auto;border:1px solid #ced4da;border-radius:6px;padding:8px 12px;background:#fff;display:flex;flex-wrap:wrap;gap:4px 16px;">
+                        <span style="color:#aaa;font-size:.9em;">Завантаження...</span>
                     </div>
                 </p>
-                <!-- ↑↑↑ КІНЕЦЬ ЗМІНИ ↑↑↑ -->
 
-                <p><strong>Досвід (роки):</strong> <input type="number" id="inputExperience" style="width:100%;"></p>
-                <p><strong>Освіта:</strong> <textarea id="inputEducation" style="width:100%;"></textarea></p>
-                <p><strong>Досягнення:</strong> <textarea id="inputAchievements" style="width:100%;"></textarea></p>
-                <p><strong>Про мене:</strong> <textarea id="inputAboutMe" style="width:100%;"></textarea></p>
-                <p><strong>Вартість конс.:</strong> <input type="number" id="inputConsultationCost" style="width:100%;"></p>
-                <p><strong>Діапазон вартості:</strong> <input type="text" id="inputConsultationCostRange" style="width:100%;"></p>
-                <p><strong>Теги пошуку:</strong> <textarea id="inputSearchTags" style="width:100%;"></textarea></p>
-                <p><strong>Реквізити:</strong> <textarea id="inputBankDetails" style="width:100%;"></textarea></p>
-                <p><strong>Порядковий номер:</strong> <input type="number" id="inputDisplayOrder" min="1" style="width:100%;"></p>
-                <p><strong>Сертифікат:</strong> <a id="detailCertificate" href="#" target="_blank">Переглянути</a></p>
-                <p><strong>Диплом:</strong> <a id="detailDiploma" href="#" target="_blank">Переглянути</a></p>
-                <p><strong>Перевірений:</strong> <span id="displayDoctorCheck"></span></p>
+                <p><strong>Досвід (роки):</strong>      <input type="number" id="inputExperience" style="width:100%;"></p>
+                <p><strong>Освіта:</strong>              <textarea id="inputEducation" style="width:100%;"></textarea></p>
+                <p><strong>Досягнення:</strong>          <textarea id="inputAchievements" style="width:100%;"></textarea></p>
+                <p><strong>Про мене:</strong>            <textarea id="inputAboutMe" style="width:100%;"></textarea></p>
+                <p><strong>Вартість конс. (USD):</strong><input type="number" id="inputConsultationCost" style="width:100%;"></p>
+                <p><strong>Діапазон вартості:</strong>   <input type="text" id="inputConsultationCostRange" style="width:100%;"></p>
+                <p><strong>Теги пошуку:</strong>         <textarea id="inputSearchTags" style="width:100%;"></textarea></p>
+                <p><strong>Реквізити:</strong>           <textarea id="inputBankDetails" style="width:100%;"></textarea></p>
+                <p><strong>Порядковий №:</strong>        <input type="number" id="inputDisplayOrder" min="1" style="width:100%;"></p>
+                <p><strong>Сертифікат:</strong>          <a id="detailCertificate" href="#" target="_blank">Переглянути</a></p>
+                <p><strong>Диплом:</strong>              <a id="detailDiploma" href="#" target="_blank">Переглянути</a></p>
+                <p><strong>Перевірений:</strong>         <span id="displayDoctorCheck"></span></p>
                 <p id="doctorProfileStatus" class="message"></p>
 
-                <!-- Історія консультацій лікаря -->
+                <!-- Консультації лікаря -->
                 <div class="consultation-history-section">
                     <h3>Історія Консультацій</h3>
                     <div class="consultation-filters">
@@ -565,7 +475,7 @@
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Дата/Час</th><th>Пацієнт</th><th>Статус</th><th>Сума</th>
+                                    <th>Дата/Час</th><th>Пацієнт</th><th>Статус</th><th>Сума (USD)</th>
                                 </tr>
                             </thead>
                             <tbody id="doctorConsultationsList">
@@ -576,17 +486,17 @@
                 </div>
             </div>
 
-            <div class="modal-actions" style="margin-top:20px; display:flex; gap:10px; flex-wrap:wrap;">
-                <button id="approveDoctorButton" class="secondary-button" style="display:none; background:#28a745;">Схвалити</button>
-                <button id="rejectDoctorButton"  class="secondary-button" style="display:none; background:#dc3545;">Відхилити</button>
-                <button id="saveDoctorProfileButton"   class="secondary-button" style="background:#007bff;">Зберегти</button>
-                <button id="revokeDoctorAccessButton"  class="secondary-button" style="background:#ffc107; color:#333;">Зняти Доступ</button>
-                <button id="deleteDoctorProfileButton" class="secondary-button" style="background:#dc3545;">Видалити</button>
+            <div class="modal-actions" style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;">
+                <button id="approveDoctorButton"      class="secondary-button" style="display:none;background:#28a745;">Схвалити</button>
+                <button id="rejectDoctorButton"       class="secondary-button" style="display:none;background:#dc3545;">Відхилити</button>
+                <button id="saveDoctorProfileButton"  class="secondary-button" style="background:#007bff;">Зберегти</button>
+                <button id="revokeDoctorAccessButton" class="secondary-button" style="background:#ffc107;color:#333;">Зняти Доступ</button>
+                <button id="deleteDoctorProfileButton"class="secondary-button" style="background:#dc3545;">Видалити</button>
             </div>
 
-            <div id="rejectionReasonGroup" style="display:none; margin-top:15px;">
+            <div id="rejectionReasonGroup" style="display:none;margin-top:15px;">
                 <label for="rejectionReason">Причина відхилення:</label>
-                <textarea id="rejectionReason" rows="3" style="width:100%; margin-bottom:10px;"></textarea>
+                <textarea id="rejectionReason" rows="3" style="width:100%;margin-bottom:10px;"></textarea>
                 <button id="sendRejectionButton" class="secondary-button" style="background:#dc3545;">Надіслати Відмову</button>
                 <p id="rejectionStatus" class="message"></p>
             </div>
@@ -600,17 +510,17 @@
             <h2>Деталі Звернення</h2>
             <div class="input-group" style="margin-bottom:15px;">
                 <label>Email користувача:</label>
-                <input type="email" id="replyUserEmailDisplay" readonly style="width:100%; padding:8px;">
+                <input type="email" id="replyUserEmailDisplay" readonly style="width:100%;padding:8px;">
             </div>
             <div class="input-group" style="margin-bottom:15px;">
                 <label>Повідомлення користувача:</label>
                 <textarea id="originalUserMessageDisplay" rows="6" readonly
-                    style="background:#f0f0f0; width:100%; padding:8px;"></textarea>
+                    style="background:#f0f0f0;width:100%;padding:8px;"></textarea>
             </div>
             <p><strong>Статус:</strong> <span id="currentReplyStatus"></span></p>
             <div class="modal-actions">
                 <button id="toggleResolvedButton" class="toggle-resolved-btn"
-                    style="padding:10px 15px; border:none; border-radius:5px; color:white; cursor:pointer;">
+                    style="padding:10px 15px;border:none;border-radius:5px;color:white;cursor:pointer;">
                     <span id="toggleResolvedText"></span>
                 </button>
             </div>
