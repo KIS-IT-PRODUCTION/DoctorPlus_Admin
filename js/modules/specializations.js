@@ -3,11 +3,8 @@ import { supabase } from '../supabase-client.js';
 import { parseJsonbArray } from './utils.js';
 
 // ─── PUBLIC: Build checkboxes for the doctor details modal ────────────────────
-
 export const buildSpecializationCheckboxes = async (currentSpecs = []) => {
-    // ВАЖЛИВО: Використовуємо правильний ID з вашого HTML
     const container = document.getElementById('specializationCheckboxList');
-    
     if (!container) {
         console.error("Не знайдено контейнер 'specializationCheckboxList' у HTML!");
         return;
@@ -15,7 +12,6 @@ export const buildSpecializationCheckboxes = async (currentSpecs = []) => {
 
     container.innerHTML = '<span style="color:#aaa;font-size:.9em;">Завантаження...</span>';
 
-    // Завантажуємо актуальні спеціалізації прямо з БД
     const { data: dbSpecs, error } = await supabase
         .from('specializations')
         .select('name_uk')
@@ -28,17 +24,15 @@ export const buildSpecializationCheckboxes = async (currentSpecs = []) => {
         return;
     }
 
-    container.innerHTML = ''; // Очищаємо контейнер перед рендером
+    container.innerHTML = ''; 
 
     if (!dbSpecs || dbSpecs.length === 0) {
         container.innerHTML = '<span style="color:#aaa;font-size:.9em;">Немає активних спеціалізацій</span>';
         return;
     }
 
-    // Малюємо чекбокси
     dbSpecs.forEach(spec => {
         const specName = spec.name_uk;
-        
         const label = document.createElement('label');
         label.style.display = 'flex';
         label.style.alignItems = 'center';
@@ -50,26 +44,20 @@ export const buildSpecializationCheckboxes = async (currentSpecs = []) => {
         checkbox.type = 'checkbox';
         checkbox.value = specName;
         
-        // Якщо ця спеціалізація є в масиві лікаря, ставимо галочку
         if (currentSpecs.includes(specName)) {
             checkbox.checked = true;
         }
 
         label.appendChild(checkbox);
         label.appendChild(document.createTextNode(specName));
-
         container.appendChild(label);
     });
 };
 
 // ─── PUBLIC: Get selected checkboxes for saving ───────────────────────────────
-
 export const getSelectedSpecializations = () => {
-    // ВАЖЛИВО: Використовуємо правильний ID з вашого HTML
     const container = document.getElementById('specializationCheckboxList');
     if (!container) return [];
-
-    // Збираємо всі значення з відмічених чекбоксів
     const checkedBoxes = container.querySelectorAll('input[type="checkbox"]:checked');
     return Array.from(checkedBoxes).map(cb => cb.value);
 };
@@ -81,8 +69,6 @@ export const updateSpecializationFilter = async (specs, current) => {
     
     console.log("⏳ Запит до таблиці specializations...");
 
-    // Тимчасово прибираємо .eq('is_active', true) і робимо select('*'), 
-    // щоб побачити, чи взагалі віддає база хоч якісь дані
     const { data: dbSpecs, error } = await supabase
         .from('specializations')
         .select('*') 
@@ -103,10 +89,7 @@ export const updateSpecializationFilter = async (specs, current) => {
     }
 
     dbSpecs.forEach(spec => {
-        // Якщо у вас немає колонки is_active, або вона false, ми все одно їх виведемо для тесту.
-        // Перевіряємо, як реально називається колонка з назвою (name_uk чи просто name)
         const specName = spec.name_uk || spec.name || 'Без назви'; 
-        
         const opt = document.createElement('option');
         opt.value = specName; 
         opt.textContent = specName + (spec.is_active ? '' : ' (неактивна)');
@@ -120,17 +103,26 @@ export const updateSpecializationFilter = async (specs, current) => {
 };
 
 // ─── PRIVATE: change display_order ────────────────────────────────────────────
-
 const changeSpecOrder = async (id, direction) => {
     const { data: cur } = await supabase
         .from('specializations')
         .select('id, display_order')
         .eq('id', id)
         .single();
-    if (!cur || cur.display_order == null) return;
+    if (!cur) return;
 
-    const targetOrder =
-        direction === 'up' ? cur.display_order - 1 : cur.display_order + 1;
+    // Якщо номер відсутній (null), призначаємо найбільший наявний + 1
+    if (cur.display_order == null) {
+        const { data: maxData } = await supabase
+            .from('specializations').select('display_order')
+            .order('display_order', { ascending: false }).limit(1);
+        const nextOrder = (maxData?.[0]?.display_order || 0) + 1;
+        await supabase.from('specializations').update({ display_order: nextOrder }).eq('id', id);
+        await fetchSpecializations();
+        return;
+    }
+
+    const targetOrder = direction === 'up' ? cur.display_order - 1 : cur.display_order + 1;
     if (targetOrder < 1) return;
 
     const { data: swap } = await supabase
@@ -152,12 +144,10 @@ const changeSpecOrder = async (id, direction) => {
 };
 
 // ─── PUBLIC: fetch & render specializations table ─────────────────────────────
-
 export const fetchSpecializations = async () => {
     const tbody = document.getElementById('specializationsList');
     if (!tbody) return;
-    tbody.innerHTML =
-        '<tr><td colspan="7" style="text-align:center;">Завантаження...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Завантаження...</td></tr>';
 
     const { data: specs, error } = await supabase
         .from('specializations')
@@ -169,7 +159,6 @@ export const fetchSpecializations = async () => {
         return;
     }
 
-    // Count approved doctors per specialization (robust JSONB parse)
     const { data: doctorsRaw } = await supabase
         .from('anketa_doctor')
         .select('specialization')
@@ -185,8 +174,7 @@ export const fetchSpecializations = async () => {
     });
 
     if (!specs?.length) {
-        tbody.innerHTML =
-            '<tr><td colspan="7" style="text-align:center;">Спеціальностей немає. Додайте першу!</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Спеціальностей немає. Додайте першу!</td></tr>';
         return;
     }
 
@@ -227,7 +215,6 @@ export const fetchSpecializations = async () => {
 };
 
 // ─── PUBLIC: init form + table events ─────────────────────────────────────────
-
 export const initSpecializations = () => {
     const form               = document.getElementById('specializationForm');
     const formTitle          = document.getElementById('specializationFormTitle');
@@ -235,6 +222,7 @@ export const initSpecializations = () => {
     const nameUkInput        = document.getElementById('specializationNameUk');
     const nameEnInput        = document.getElementById('specializationNameEn');
     const iconInput          = document.getElementById('specializationIcon');
+    const orderInput         = document.getElementById('specializationDisplayOrder'); // Нове поле
     const clearBtn           = document.getElementById('clearSpecializationForm');
     const statusEl           = document.getElementById('specializationStatus');
     const tbody              = document.getElementById('specializationsList');
@@ -242,6 +230,7 @@ export const initSpecializations = () => {
     const clearForm = () => {
         form?.reset();
         if (idInput)    idInput.value = '';
+        if (orderInput) orderInput.value = '';
         if (formTitle)  formTitle.textContent = 'Додати нову спеціальність';
         if (statusEl)   statusEl.textContent = '';
     };
@@ -253,23 +242,34 @@ export const initSpecializations = () => {
         statusEl.textContent = 'Збереження...';
         statusEl.style.color = '#333';
 
-// Функція для створення безпечного slug з англійської назви
         const generateSlug = (text) => {
             return text
                 .toLowerCase()
-                .replace(/[^a-z0-9]+/g, '_') // Замінюємо пробіли та спецсимволи на _
-                .replace(/^_|_$/g, '');      // Прибираємо _ на початку та в кінці
+                .replace(/[^a-z0-9]+/g, '_')
+                .replace(/^_|_$/g, '');
         };
 
         const nameEnClean = nameEnInput.value.trim();
+        const editId = idInput.value;
+        
+        let orderVal = orderInput?.value ? parseInt(orderInput.value, 10) : null;
+
+        // Якщо це новий запис і номер не вказано вручну — генеруємо автоматично
+        if (!orderVal && !editId) {
+            const { data: maxData } = await supabase
+                .from('specializations').select('display_order')
+                .order('display_order', { ascending: false }).limit(1);
+            orderVal = (maxData?.[0]?.display_order || 0) + 1;
+        }
 
         const payload = {
             name_uk: nameUkInput.value.trim(),
             name_en: nameEnClean,
             icon:    iconInput.value.trim() || null,
-            slug:    generateSlug(nameEnClean) // Додаємо автозгенерований slug
+            slug:    generateSlug(nameEnClean),
+            display_order: orderVal
         };
-        const editId = idInput.value;
+        
         let dbError;
 
         if (editId) {
@@ -281,9 +281,13 @@ export const initSpecializations = () => {
         }
 
         if (dbError) {
-            statusEl.textContent = dbError.message.includes('unique')
-                ? 'Спеціальність з такою назвою вже існує.'
-                : `Помилка: ${dbError.message}`;
+            if (dbError.code === '23505' && dbError.message.includes('display_order')) {
+                statusEl.textContent = 'Помилка: Спеціальність з таким порядковим номером вже існує!';
+            } else if (dbError.message.includes('unique')) {
+                statusEl.textContent = 'Спеціальність з такою назвою вже існує.';
+            } else {
+                statusEl.textContent = `Помилка: ${dbError.message}`;
+            }
             statusEl.style.color = 'red';
         } else {
             statusEl.textContent = editId ? 'Оновлено!' : 'Спеціальність додано!';
@@ -304,10 +308,13 @@ export const initSpecializations = () => {
         if (btn.classList.contains('spec-edit-btn')) {
             const { data } = await supabase.from('specializations').select('*').eq('id', id).single();
             if (!data) return;
+            
             idInput.value    = data.id;
             nameUkInput.value = data.name_uk;
             nameEnInput.value = data.name_en;
             iconInput.value  = data.icon || '';
+            if (orderInput) orderInput.value = data.display_order || '';
+            
             formTitle.textContent = `Редагування: ${data.name_uk}`;
             statusEl.textContent  = '';
             form.scrollIntoView({ behavior: 'smooth', block: 'start' });

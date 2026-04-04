@@ -5,14 +5,24 @@ import { supabase } from '../supabase-client.js';
 const _el = (id) => document.getElementById(id);
 
 // ─── Change FAQ display_order (NULL-swap) ─────────────────────────────────────
-
 const changeFaqOrder = async (id, direction) => {
     const { data: cur } = await supabase
         .from('faqs').select('id, display_order').eq('id', id).single();
-    if (!cur || cur.display_order == null) return;
+    
+    if (!cur) return;
 
-    const targetOrder =
-        direction === 'up' ? cur.display_order - 1 : cur.display_order + 1;
+    // Якщо номер відсутній (null), просто призначаємо найбільший наявний + 1
+    if (cur.display_order == null) {
+        const { data: maxData } = await supabase
+            .from('faqs').select('display_order')
+            .order('display_order', { ascending: false }).limit(1);
+        const nextOrder = (maxData?.[0]?.display_order || 0) + 1;
+        await supabase.from('faqs').update({ display_order: nextOrder }).eq('id', id);
+        await fetchFaqsAdmin();
+        return;
+    }
+
+    const targetOrder = direction === 'up' ? cur.display_order - 1 : cur.display_order + 1;
     if (targetOrder < 1) return;
 
     const { data: swap } = await supabase
@@ -29,7 +39,6 @@ const changeFaqOrder = async (id, direction) => {
 };
 
 // ─── Fetch & render ───────────────────────────────────────────────────────────
-
 export const fetchFaqsAdmin = async () => {
     const tbody = _el('faqList');
     if (!tbody) return;
@@ -53,7 +62,7 @@ export const fetchFaqsAdmin = async () => {
     data.forEach(f => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td style="text-align:center;width:50px;">${f.display_order ?? f.id}</td>
+            <td style="text-align:center;width:50px;">${f.display_order ?? '-'}</td>
             <td>${f.question_uk}</td>
             <td style="white-space:nowrap;">
                 <button class="order-btn faq-up-btn"   data-id="${f.id}" title="Вгору">▲</button>
@@ -66,7 +75,6 @@ export const fetchFaqsAdmin = async () => {
 };
 
 // ─── Init form + table events ─────────────────────────────────────────────────
-
 export const initFaq = () => {
     const form        = _el('faqForm');
     const idInput     = _el('faqId');
@@ -74,24 +82,60 @@ export const initFaq = () => {
     const aUk         = _el('faqAnswerUk');
     const qEn         = _el('faqQuestionEn');
     const aEn         = _el('faqAnswerEn');
+    const orderInput  = _el('faqDisplayOrder'); // Нове поле
     const clearBtn    = _el('clearFaqForm');
     const tbody       = _el('faqList');
 
-    const clearForm = () => { form?.reset(); if (idInput) idInput.value = ''; };
+    const clearForm = () => { 
+        form?.reset(); 
+        if (idInput) idInput.value = ''; 
+        if (orderInput) orderInput.value = ''; 
+    };
 
     clearBtn?.addEventListener('click', clearForm);
 
     form?.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const obj = {
-            question_uk: qUk.value, answer_uk: aUk.value,
-            question_en: qEn.value, answer_en: aEn.value,
-        };
-        if (idInput.value) {
-            await supabase.from('faqs').update(obj).eq('id', idInput.value);
-        } else {
-            await supabase.from('faqs').insert([obj]);
+        
+        let orderVal = orderInput?.value ? parseInt(orderInput.value, 10) : null;
+
+        // Якщо це новий запис і номер не вказано вручну — генеруємо автоматично (MAX + 1)
+        if (!orderVal && !idInput.value) {
+            const { data: maxData } = await supabase
+                .from('faqs').select('display_order')
+                .order('display_order', { ascending: false }).limit(1);
+            orderVal = (maxData?.[0]?.display_order || 0) + 1;
         }
+
+        const obj = {
+            question_uk: qUk.value, 
+            answer_uk: aUk.value,
+            question_en: qEn.value, 
+            answer_en: aEn.value,
+            display_order: orderVal
+        };
+
+        let dbError = null;
+
+        // Збереження або оновлення
+        if (idInput.value) {
+            const { error } = await supabase.from('faqs').update(obj).eq('id', idInput.value);
+            dbError = error;
+        } else {
+            const { error } = await supabase.from('faqs').insert([obj]);
+            dbError = error;
+        }
+
+        // Обробка помилок бази даних (особливо конфлікт унікального номера)
+        if (dbError) {
+            if (dbError.code === '23505') { 
+                alert('Помилка: FAQ з таким порядковим номером вже існує! Введіть інший номер або скористайтеся кнопками Вгору/Вниз.');
+            } else {
+                alert('Помилка: ' + dbError.message);
+            }
+            return;
+        }
+
         clearForm();
         await fetchFaqsAdmin();
     });
@@ -113,9 +157,14 @@ export const initFaq = () => {
         if (btn.classList.contains('edit-btn')) {
             const { data } = await supabase.from('faqs').select('*').eq('id', id).single();
             if (!data) return;
+            
             idInput.value = data.id;
-            qUk.value = data.question_uk; aUk.value = data.answer_uk;
-            qEn.value = data.question_en; aEn.value = data.answer_en;
+            qUk.value = data.question_uk; 
+            aUk.value = data.answer_uk;
+            qEn.value = data.question_en; 
+            aEn.value = data.answer_en;
+            if (orderInput) orderInput.value = data.display_order || ''; 
+            
             form.scrollIntoView({ behavior: 'smooth' });
         }
     });

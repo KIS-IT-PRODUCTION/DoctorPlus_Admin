@@ -232,12 +232,13 @@
             </div>
 
             <!-- FAQ -->
-            <div id="faqSection" class="dashboard-section" style="display:none;">
+         <div id="faqSection" class="dashboard-section" style="display:none;">
                 <h2>Керування FAQ</h2>
                 <div class="faq-management">
                     <form id="faqForm">
                         <input type="hidden" id="faqId">
                         <h3>Додати / Редагувати Запис</h3>
+                        
                         <div class="input-group">
                             <label for="faqQuestionUk">Питання (UK):</label>
                             <input type="text" id="faqQuestionUk" required>
@@ -246,6 +247,7 @@
                             <label for="faqAnswerUk">Відповідь (UK):</label>
                             <textarea id="faqAnswerUk" rows="4" required></textarea>
                         </div>
+                        
                         <div class="input-group">
                             <label for="faqQuestionEn">Питання (EN):</label>
                             <input type="text" id="faqQuestionEn" required>
@@ -254,11 +256,18 @@
                             <label for="faqAnswerEn">Відповідь (EN):</label>
                             <textarea id="faqAnswerEn" rows="4" required></textarea>
                         </div>
+
+                        <div class="input-group">
+                            <label for="faqDisplayOrder">Порядковий № (за бажанням):</label>
+                            <input type="number" id="faqDisplayOrder" min="1" placeholder="Залишіть порожнім для авто-номера">
+                        </div>
+
                         <div style="display:flex;gap:10px;">
                             <button type="submit" class="secondary-button" style="background:#007bff;">Зберегти FAQ</button>
                             <button type="button" id="clearFaqForm" class="secondary-button">Очистити форму</button>
                         </div>
                     </form>
+                    
                     <div>
                         <h3>Існуючі FAQ</h3>
                         <div class="table-container">
@@ -363,6 +372,10 @@
                         <div class="input-group">
                             <label for="specializationIcon">Іконка — emoji (необов'язково)</label>
                             <input type="text" id="specializationIcon" placeholder="Наприклад: ❤️" style="max-width:160px;">
+                        </div>
+                        <div class="input-group">
+                            <label for="specializationDisplayOrder">Порядковий № (за бажанням):</label>
+                            <input type="number" id="specializationDisplayOrder" min="1" placeholder="Залишіть порожнім для авто-номера">
                         </div>
                         <div style="display:flex;gap:10px;flex-wrap:wrap;">
                             <button type="submit" class="secondary-button" style="background:#007bff;">
@@ -527,7 +540,7 @@
             <p id="replyStatusMessage" class="message"></p>
         </div>
     </div>
-
+#Form
     <script type="module" src="js/admin-dashboard.js"></script>
 </body>
 </html>
